@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<style id="lumi-runtime">
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,600;1,400&display=swap');
+
+:root {
+  --body-bg: #090d16;
+  --ff-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --ff-mono: 'JetBrains Mono', monospace;
+
+  --surface: #0d1117;
+  --surface-dim: #161b22;
+  --surface-bright: #21262d;
+  --surface-container: #161b22;
+  --surface-container-high: #30363d;
+  --on-surface: #f0f6fc;
+  --on-surface-variant: #8b949e;
+  
+  --primary: #2f81f7;
+  --accent-cyan: #38bdf8;
+  --accent-container: rgba(47, 129, 247, 0.15);
+  --accent-fixed: #58a6ff;
+  --positive: #238636;
+  --positive-container: rgba(35, 134, 54, 0.2);
+  --outline: #30363d;
+  --stroke-default: #30363d;
+}
+
+html, body {
+  background: var(--body-bg) !important;
+  color: var(--on-surface) !important;
+  font-family: var(--ff-sans);
+  margin: 0;
+  padding: 24px;
+  -webkit-font-smoothing: antialiased;
+}
+
+.widget-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.diagram-card {
+  background: var(--surface-dim);
+  border: 1px solid var(--outline);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.diagram-header h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.diagram-header p {
+  margin: 4px 0 0 0;
+  color: var(--on-surface-variant);
+  font-size: 0.9rem;
+}
+
+.svg-viewport {
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.node-group {
+  cursor: pointer;
+  transition: all 200ms ease;
+}
+
+.node-group text {
+  user-select: none;
+}
+
+.node-shape {
+  transition: stroke 200ms ease, stroke-width 200ms ease, fill 200ms ease;
+}
+
+.node-group:hover .node-shape,
+.node-group.is-selected .node-shape {
+  stroke: var(--accent-cyan);
+  stroke-width: 2.5px;
+  fill: var(--accent-container);
+}
+
+.edge-path {
+  transition: stroke 200ms ease, stroke-width 200ms ease, stroke-dasharray 200ms ease;
+}
+
+.edge-path.is-active {
+  stroke: var(--accent-cyan);
+  stroke-width: 2.5px;
+  stroke-dasharray: none;
+}
+
+.inspector-card {
+  background: var(--surface);
+  border: 1px solid var(--outline);
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 90px;
+}
+
+.inspector-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.inspector-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--accent-cyan);
+}
+
+.inspector-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: var(--accent-container);
+  color: var(--accent-fixed);
+  font-family: var(--ff-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid var(--primary);
+}
+
+.inspector-desc {
+  margin: 0;
+  color: var(--on-surface);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+</style>
+</head>
+<body>
+  <div class="widget-container">
+    <div class="diagram-card">
+      <div class="diagram-header">
+        <h2>Azure Site Recovery Failover Lifecycle</h2>
+        <p>Interactive Disaster Recovery Orchestration Flowchart</p>
+      </div>
+
+      <svg class="svg-viewport" viewBox="0 0 560 720" role="img" aria-label="Azure Site Recovery Failover Flowchart">
+        <defs>
+          <marker id="caret" viewBox="0 0 10 10" refX="7.5" refY="5" markerWidth="10" markerHeight="10" orient="auto">
+            <path d="M 3 1.2 L 7.5 5 L 3 8.8" fill="none" stroke="var(--on-surface-variant)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+          <marker id="caret-active" viewBox="0 0 10 10" refX="7.5" refY="5" markerWidth="10" markerHeight="10" orient="auto">
+            <path d="M 3 1.2 L 7.5 5 L 3 8.8" fill="none" stroke="var(--accent-cyan)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+        </defs>
+
+        <!-- CONNECTORS -->
+        <path id="edge-A-B" class="edge-path" d="M 280 65 L 280 91" fill="none" stroke="var(--outline)" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#caret)"/>
+        <path id="edge-B-C" class="edge-path" d="M 280 149 L 280 175" fill="none" stroke="var(--outline)" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#caret)"/>
+        <path id="edge-C-D" class="edge-path" d="M 280 245 L 280 271" fill="none" stroke="var(--outline)" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#caret)"/>
+        <path id="edge-D-E" class="edge-path" d="M 280 329 L 280 345 Q 280 361 264 361 L 176 361 Q 160 361 160 377 L 160 385" fill="none" stroke="var(--outline)" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#caret)"/>
+        <path id="edge-D-F" class="edge-path" d="M 280 329 L 280 345 Q 280 361 296 361 L 384 361 Q 400 361 400 377 L 400 385" fill="none" stroke="var(--outline)" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#caret)"/>
+        <path id="edge-E-G" class="edge-path" d="M 160 443 L 160 455 Q 160 471 176 471 L 264 471 Q 280 471 280 487 L 280 495" fill="none" stroke="var(--outline)" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#caret)"/>
+        <path id="edge-F-G" class="edge-path" d="M 400 443 L 400 455 Q 400 471 384 471 L 296 471 Q 280 471 280 487 L 280 495" fill="none" stroke="var(--outline)" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#caret)"/>
+        <path id="edge-G-H" class="edge-path" d="M 280 553 L 280 579" fill="none" stroke="var(--outline)" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#caret)"/>
+        <path id="edge-H-I" class="edge-path" d="M 280 633 L 280 659" fill="none" stroke="var(--outline)" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#caret)"/>
+
+        <!-- NODES -->
+        <g id="node-A" class="node-group" data-id="A">
+          <ellipse class="node-shape" cx="280" cy="40" rx="110" ry="24" fill="var(--surface-bright)" stroke="var(--outline)" stroke-width="1.5"/>
+          <text x="280" y="38" text-anchor="middle" font-family="var(--ff-sans)" font-size="14" font-weight="600" fill="var(--on-surface)">Primary Region Active</text>
+          <text x="280" y="52" text-anchor="middle" font-family="var(--ff-mono)" font-size="11" fill="var(--on-surface-variant)">Source Production Environment</text>
+        </g>
+
+        <g id="node-B" class="node-group" data-id="B">
+          <rect class="node-shape" x="170" y="99" width="220" height="50" rx="12" fill="var(--surface-bright)" stroke="var(--outline)" stroke-width="1.5"/>
+          <text x="280" y="120" text-anchor="middle" font-family="var(--ff-sans)" font-size="14" font-weight="600" fill="var(--on-surface)">Continuous Replication</text>
+          <text x="280" y="136" text-anchor="middle" font-family="var(--ff-mono)" font-size="11" fill="var(--on-surface-variant)">Cache Storage & Delta Sync</text>
+        </g>
+
+        <g id="node-C" class="node-group" data-id="C">
+          <path class="node-shape" d="M 267 178 Q 280 175 293 178 L 382 202 Q 395 210 382 218 L 293 242 Q 280 245 267 242 L 178 218 Q 165 210 178 202 Z" fill="var(--surface-bright)" stroke="var(--outline)" stroke-width="1.5"/>
+          <text x="280" y="205" text-anchor="middle" font-family="var(--ff-sans)" font-size="14" font-weight="600" fill="var(--on-surface)">Disaster / Drill Initiated</text>
+          <text x="280" y="221" text-anchor="middle" font-family="var(--ff-mono)" font-size="11" fill="var(--on-surface-variant)">Manual or Automated Trigger</text>
+        </g>
+
+        <g id="node-D" class="node-group" data-id="D">
+          <rect class="node-shape" x="165" y="279" width="230" height="50" rx="12" fill="var(--accent-container)" stroke="var(--primary)" stroke-width="1.5"/>
+          <text x="280" y="300" text-anchor="middle" font-family="var(--ff-sans)" font-size="14" font-weight="600" fill="var(--on-surface)">Execute Recovery Plan</text>
+          <text x="280" y="316" text-anchor="middle" font-family="var(--ff-mono)" font-size="11" fill="var(--on-surface-variant)">ASR Orchestration Engine</text>
+        </g>
+
+        <g id="node-E" class="node-group" data-id="E">
+          <rect class="node-shape" x="65" y="393" width="190" height="50" rx="12" fill="var(--surface-bright)" stroke="var(--outline)" stroke-width="1.5"/>
+          <text x="160" y="414" text-anchor="middle" font-family="var(--ff-sans)" font-size="14" font-weight="600" fill="var(--on-surface)">Shut Down Source VMs</text>
+          <text x="160" y="430" text-anchor="middle" font-family="var(--ff-mono)" font-size="11" fill="var(--on-surface-variant)">Flushes Pending Data</text>
+        </g>
+
+        <g id="node-F" class="node-group" data-id="F">
+          <rect class="node-shape" x="305" y="393" width="190" height="50" rx="12" fill="var(--surface-bright)" stroke="var(--outline)" stroke-width="1.5"/>
+          <text x="400" y="414" text-anchor="middle" font-family="var(--ff-sans)" font-size="14" font-weight="600" fill="var(--on-surface)">Provision Target VMs</text>
+          <text x="400" y="430" text-anchor="middle" font-family="var(--ff-mono)" font-size="11" fill="var(--on-surface-variant)">From Replicated Disks</text>
+        </g>
+
+        <g id="node-G" class="node-group" data-id="G">
+          <rect class="node-shape" x="160" y="503" width="240" height="50" rx="12" fill="var(--surface-bright)" stroke="var(--outline)" stroke-width="1.5"/>
+          <text x="280" y="524" text-anchor="middle" font-family="var(--ff-sans)" font-size="14" font-weight="600" fill="var(--on-surface)">Post-Failover Automation</text>
+          <text x="280" y="540" text-anchor="middle" font-family="var(--ff-mono)" font-size="11" fill="var(--on-surface-variant)">Managed Identity Runbook</text>
+        </g>
+
+        <g id="node-H" class="node-group" data-id="H">
+          <rect class="node-shape" x="170" y="587" width="220" height="46" rx="23" fill="var(--positive-container)" stroke="var(--positive)" stroke-width="1.5"/>
+          <text x="280" y="606" text-anchor="middle" font-family="var(--ff-sans)" font-size="14" font-weight="600" fill="var(--on-surface)">Secondary Region Active</text>
+          <text x="280" y="622" text-anchor="middle" font-family="var(--ff-mono)" font-size="11" fill="var(--on-surface-variant)">Target Workloads Live</text>
+        </g>
+
+        <g id="node-I" class="node-group" data-id="I">
+          <rect class="node-shape" x="175" y="667" width="210" height="46" rx="12" fill="var(--surface-bright)" stroke="var(--outline)" stroke-width="1.5"/>
+          <text x="280" y="686" text-anchor="middle" font-family="var(--ff-sans)" font-size="14" font-weight="600" fill="var(--on-surface)">Reprotect & Failback</text>
+          <text x="280" y="702" text-anchor="middle" font-family="var(--ff-mono)" font-size="11" fill="var(--on-surface-variant)">Reverse Replication Setup</text>
+        </g>
+      </svg>
+
+      <!-- Inspector Card -->
+      <div id="inspector" class="inspector-card">
+        <div class="inspector-top">
+          <span id="inspector-title" class="inspector-title">Hover or tap a step</span>
+          <span id="inspector-badge" class="inspector-badge">Phase Detail</span>
+        </div>
+        <p id="inspector-desc" class="inspector-desc">Explore the Azure Site Recovery lifecycle by hovering over any node in the orchestration flowchart above.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const NODE_DETAILS = {
+      A: { title: "Primary Region Active", badge: "Normal State", desc: "Source VMs operate normally in East US. The Mobility Service extension captures write I/O operations continuously." },
+      B: { title: "Continuous Replication", badge: "Replication Phase", desc: "Data changes are transmitted to a Cache Storage Account in East US, then securely pushed to managed target disks in West US." },
+      C: { title: "Disaster / Drill Initiated", badge: "Trigger Event", desc: "An unplanned outage or planned DR drill triggers failover execution manually via Azure Portal / CLI or automatically via alerts." },
+      D: { title: "Execute Recovery Plan", badge: "ASR Engine", desc: "Azure Site Recovery processes the recovery plan, evaluating startup groups, ordering dependencies, and calling automation runbooks." },
+      E: { title: "Shut Down Source VMs", badge: "Data Integrity", desc: "ASR attempts a clean shutdown of primary VMs to flush remaining data and ensure crash-consistent recovery snapshot integrity." },
+      F: { title: "Provision Target VMs", badge: "Compute Spin-Up", desc: "Target Azure VMs are instantiated using replicated managed disks, assigning designated VNet subnets and VM sizes." },
+      G: { title: "Post-Failover Automation", badge: "Networking & Scripts", desc: "Azure Automation runbooks execute to reattach static Public IPs, update DNS records, and register IP changes." },
+      H: { title: "Secondary Region Active", badge: "Failover Complete", desc: "Workloads are fully operational in West US. User traffic is routed to the new target endpoints." },
+      I: { title: "Reprotect & Failback", badge: "Recovery Phase", desc: "Once the primary region recovers, reprotection synchronizes changes back to East US to enable seamless failback." }
+    };
+
+    const NODE_EDGES = {
+      A: ["edge-A-B"],
+      B: ["edge-A-B", "edge-B-C"],
+      C: ["edge-B-C", "edge-C-D"],
+      D: ["edge-C-D", "edge-D-E", "edge-D-F"],
+      E: ["edge-D-E", "edge-E-G"],
+      F: ["edge-D-F", "edge-F-G"],
+      G: ["edge-E-G", "edge-F-G", "edge-G-H"],
+      H: ["edge-G-H", "edge-H-I"],
+      I: ["edge-H-I"]
+    };
+
+    let selectedNodeId = null;
+
+    function highlightNode(id) {
+      document.querySelectorAll('.node-group').forEach(el => el.classList.remove('is-selected'));
+      document.querySelectorAll('.edge-path').forEach(el => {
+        el.classList.remove('is-active');
+        el.setAttribute('marker-end', 'url(#caret)');
+      });
+
+      if (!id || !NODE_DETAILS[id]) {
+        document.getElementById('inspector-title').textContent = 'Hover or tap a step';
+        document.getElementById('inspector-badge').textContent = 'Phase Detail';
+        document.getElementById('inspector-desc').textContent = 'Explore the Azure Site Recovery lifecycle by hovering over any node in the orchestration flowchart above.';
+        return;
+      }
+
+      const nodeEl = document.getElementById(`node-${id}`);
+      if (nodeEl) nodeEl.classList.add('is-selected');
+
+      const edges = NODE_EDGES[id] || [];
+      edges.forEach(edgeId => {
+        const edgeEl = document.getElementById(edgeId);
+        if (edgeEl) {
+          edgeEl.classList.add('is-active');
+          edgeEl.setAttribute('marker-end', 'url(#caret-active)');
+        }
+      });
+
+      const data = NODE_DETAILS[id];
+      document.getElementById('inspector-title').textContent = data.title;
+      document.getElementById('inspector-badge').textContent = data.badge;
+      document.getElementById('inspector-desc').textContent = data.desc;
+    }
+
+    document.querySelectorAll('.node-group').forEach(node => {
+      const id = node.getAttribute('data-id');
+      node.addEventListener('mouseenter', () => highlightNode(id));
+      node.addEventListener('mouseleave', () => highlightNode(selectedNodeId));
+      node.addEventListener('click', () => {
+        selectedNodeId = (selectedNodeId === id) ? null : id;
+        highlightNode(selectedNodeId);
+      });
+    });
+  </script>
+</body>
+</html>

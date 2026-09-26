@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AZ-104 Hackathon: Azure Site Recovery Dashboard & Presentation Kit</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap"
+    rel="stylesheet">
   <style>
     :root {
       --bg-dark: #090d16;
-      --card-bg: rgba(22, 27, 34, 0.75);
+      --card-bg: rgba(22, 27, 34, 0.85);
       --card-border: #30363d;
       --primary-blue: #2f81f7;
       --primary-glow: rgba(47, 129, 247, 0.4);
@@ -34,7 +37,7 @@
     body {
       font-family: var(--font-sans);
       background-color: var(--bg-dark);
-      background-image: 
+      background-image:
         radial-gradient(at 0% 0%, rgba(47, 129, 247, 0.12) 0px, transparent 50%),
         radial-gradient(at 100% 100%, rgba(56, 189, 248, 0.08) 0px, transparent 50%);
       color: var(--text-main);
@@ -44,7 +47,7 @@
     }
 
     header {
-      background: rgba(13, 17, 23, 0.85);
+      background: rgba(13, 17, 23, 0.9);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--card-border);
       padding: 16px 32px;
@@ -125,8 +128,15 @@
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     /* Grid & Cards */
@@ -143,7 +153,7 @@
       border: 1px solid var(--card-border);
       border-radius: 12px;
       padding: 24px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
     }
 
     .card-header {
@@ -269,8 +279,13 @@
     }
 
     @keyframes syncMove {
-      0% { left: 0%; }
-      100% { left: 100%; }
+      0% {
+        left: 0%;
+      }
+
+      100% {
+        left: 100%;
+      }
     }
 
     /* Simulation Control Console */
@@ -312,6 +327,14 @@
       box-shadow: 0 0 15px rgba(210, 153, 34, 0.4);
     }
 
+    /* Embedded Flowchart iframe */
+    .flow-iframe {
+      width: 100%;
+      height: 820px;
+      border: none;
+      border-radius: 12px;
+    }
+
     /* Code Display */
     pre {
       background: var(--code-bg);
@@ -324,21 +347,9 @@
       color: #c9d1d9;
       position: relative;
     }
-
-    .copy-btn {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      background: rgba(255,255,255,0.1);
-      border: 1px solid var(--card-border);
-      color: white;
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      cursor: pointer;
-    }
   </style>
 </head>
+
 <body>
 
   <header>
@@ -348,8 +359,9 @@
     </div>
     <div class="nav-tabs">
       <button class="tab-btn active" onclick="switchTab('arch')">Architecture & Demo</button>
+      <button class="tab-btn" onclick="switchTab('flow')">ASR Lifecycle Flowchart</button>
       <button class="tab-btn" onclick="switchTab('presentation')">Pitch Deck & Q&A</button>
-      <button class="tab-btn" onclick="switchTab('runbook')">Step-by-Step Runbook</button>
+      <button class="tab-btn" onclick="switchTab('runbook')">Step-by-Step Tasks</button>
       <button class="tab-btn" onclick="switchTab('code')">Required Files & CLI</button>
     </div>
   </header>
@@ -383,148 +395,170 @@
           </div>
           <div class="stat-value" id="rto-timer" style="color: var(--success-green);">4m 30s</div>
           <div class="stat-label">Target RTO: < 10 mins • Target RPO: < 30 secs</div>
-        </div>
-      </div>
-
-      <!-- ARCHITECTURE DIAGRAM -->
-      <div class="arch-container">
-        <div style="display: flex; justify-content: space-between; margin-bottom: 24px;">
-          <h2>Azure-to-Azure Site Recovery Topology</h2>
-          <button class="btn btn-warning" onclick="runFailoverSimulation()">⚡ Execute Test Failover Simulation</button>
-        </div>
-
-        <div class="regions-grid">
-          <!-- PRIMARY REGION -->
-          <div class="region-box primary">
-            <div class="region-title">
-              <span>Primary: East US</span>
-              <span style="color: var(--primary-blue); font-size: 0.8rem;">Contoso-App-Prod-RG</span>
-            </div>
-            <div class="vm-card">
-              <div>
-                <strong>Web-VM</strong>
-                <div style="font-size: 0.75rem; color: var(--text-muted);">10.0.1.4 • Nginx Web</div>
-              </div>
-              <div class="vm-status" id="prod-web-status"></div>
-            </div>
-            <div class="vm-card">
-              <div>
-                <strong>DB-VM</strong>
-                <div style="font-size: 0.75rem; color: var(--text-muted);">10.0.2.4 • SQL Database</div>
-              </div>
-              <div class="vm-status" id="prod-db-status"></div>
-            </div>
-            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 12px;">
-              💾 Disks syncing to Cache Storage: <code>asrcachestorage</code>
-            </div>
-          </div>
-
-          <!-- SYNC BRIDGE -->
-          <div class="sync-bridge">
-            <span style="font-size: 0.75rem; font-weight: 700; color: var(--accent-cyan);">ASR Vault</span>
-            <div class="sync-arrow">
-              <div class="sync-dot"></div>
-            </div>
-            <span style="font-size: 0.7rem; color: var(--text-muted);">Delta Sync</span>
-          </div>
-
-          <!-- DR REGION -->
-          <div class="region-box dr">
-            <div class="region-title">
-              <span>Secondary: West US</span>
-              <span style="color: var(--warning-amber); font-size: 0.8rem;">Contoso-App-DR-RG</span>
-            </div>
-            <div class="vm-card">
-              <div>
-                <strong>DB-VM (Target)</strong>
-                <div style="font-size: 0.75rem; color: var(--text-muted);" id="dr-db-sub">Group 1 • Subnet-DB-DR</div>
-              </div>
-              <div class="vm-status off" id="dr-db-status"></div>
-            </div>
-            <div class="vm-card">
-              <div>
-                <strong>Web-VM (Target)</strong>
-                <div style="font-size: 0.75rem; color: var(--text-muted);" id="dr-web-sub">Group 2 • Subnet-Web-DR</div>
-              </div>
-              <div class="vm-status off" id="dr-web-status"></div>
-            </div>
-            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 12px;">
-              ⚡ Post-Action: <code>Attach-DR-PublicIP.ps1</code>
-            </div>
           </div>
         </div>
 
-        <!-- SIMULATION LOG CONSOLE -->
-        <div class="console-box" id="console-log">
-          [INFO] System Ready. Primary region active in East US. Click 'Execute Test Failover Simulation' to view real-time ASR orchestration logs...
+        <!-- ARCHITECTURE DIAGRAM -->
+        <div class="arch-container">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 24px;">
+            <h2>Azure-to-Azure Site Recovery Topology</h2>
+            <button class="btn btn-warning" onclick="runFailoverSimulation()">⚡ Execute Test Failover
+              Simulation</button>
+          </div>
+
+          <div class="regions-grid">
+            <!-- PRIMARY REGION -->
+            <div class="region-box primary">
+              <div class="region-title">
+                <span>Primary: East US</span>
+                <span style="color: var(--primary-blue); font-size: 0.8rem;">Contoso-App-Prod-RG</span>
+              </div>
+              <div class="vm-card">
+                <div>
+                  <strong>Web-VM</strong>
+                  <div style="font-size: 0.75rem; color: var(--text-muted);">10.0.1.4 • Nginx Web</div>
+                </div>
+                <div class="vm-status" id="prod-web-status"></div>
+              </div>
+              <div class="vm-card">
+                <div>
+                  <strong>DB-VM</strong>
+                  <div style="font-size: 0.75rem; color: var(--text-muted);">10.0.2.4 • SQL Database</div>
+                </div>
+                <div class="vm-status" id="prod-db-status"></div>
+              </div>
+              <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 12px;">
+                💾 Disks syncing to Cache Storage: <code>asrcachestorage</code>
+              </div>
+            </div>
+
+            <!-- SYNC BRIDGE -->
+            <div class="sync-bridge">
+              <span style="font-size: 0.75rem; font-weight: 700; color: var(--accent-cyan);">ASR Vault</span>
+              <div class="sync-arrow">
+                <div class="sync-dot"></div>
+              </div>
+              <span style="font-size: 0.7rem; color: var(--text-muted);">Delta Sync</span>
+            </div>
+
+            <!-- DR REGION -->
+            <div class="region-box dr">
+              <div class="region-title">
+                <span>Secondary: West US</span>
+                <span style="color: var(--warning-amber); font-size: 0.8rem;">Contoso-App-DR-RG</span>
+              </div>
+              <div class="vm-card">
+                <div>
+                  <strong>DB-VM (Target)</strong>
+                  <div style="font-size: 0.75rem; color: var(--text-muted);" id="dr-db-sub">Group 1 • Subnet-DB-DR</div>
+                </div>
+                <div class="vm-status off" id="dr-db-status"></div>
+              </div>
+              <div class="vm-card">
+                <div>
+                  <strong>Web-VM (Target)</strong>
+                  <div style="font-size: 0.75rem; color: var(--text-muted);" id="dr-web-sub">Group 2 • Subnet-Web-DR
+                  </div>
+                </div>
+                <div class="vm-status off" id="dr-web-status"></div>
+              </div>
+              <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 12px;">
+                ⚡ Post-Action: <code>Attach-DR-PublicIP.ps1</code>
+              </div>
+            </div>
+          </div>
+
+          <!-- SIMULATION LOG CONSOLE -->
+          <div class="console-box" id="console-log">
+            [INFO] System Ready. Primary region active in East US. Click 'Execute Test Failover Simulation' to view
+            real-time ASR orchestration logs...
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- TAB 2: PITCH DECK & Q&A -->
-    <div id="presentation" class="tab-content">
-      <div class="card" style="margin-bottom: 24px;">
-        <h2>🎤 5-Minute Timed Hackathon Pitch Script</h2>
-        <p style="color: var(--text-muted); margin-top: 8px;">Use this structure to wao the judges during presentation round.</p>
+      <!-- TAB 2: INTERACTIVE FLOWCHART -->
+      <div id="flow" class="tab-content">
+        <div class="card" style="padding: 12px;">
+          <iframe src="Architecture/asr-failover-flowchart.html" class="flow-iframe"></iframe>
+        </div>
       </div>
 
-      <div class="dashboard-grid">
+      <!-- TAB 3: PITCH DECK & Q&A -->
+      <div id="presentation" class="tab-content">
+        <div class="card" style="margin-bottom: 24px;">
+          <h2>🎤 5-Minute Timed Hackathon Pitch Script</h2>
+          <p style="color: var(--text-muted); margin-top: 8px;">Use this structure to wow the judges during presentation
+            round.</p>
+        </div>
+
+        <div class="dashboard-grid">
+          <div class="card">
+            <h3 style="color: var(--accent-cyan);">0:00 - 0:45 | Problem Context</h3>
+            <p style="margin-top: 12px; line-height: 1.6; font-size: 0.95rem;">
+              "Enterprise outages cost up to \$300k/hour. Traditional active-active setups double your cloud bill. Our
+              solution delivers automated cross-region disaster recovery using Azure Site Recovery while keeping DR
+              compute costs strictly \$0/hour until failover."
+            </p>
+          </div>
+
+          <div class="card">
+            <h3 style="color: var(--accent-cyan);">0:45 - 1:45 | Architecture</h3>
+            <p style="margin-top: 12px; line-height: 1.6; font-size: 0.95rem;">
+              "We deployed a 2-Tier app in East US. ASR continuously replicates disk deltas via a Cache Storage account
+              to West US. Our Recovery Plan orchestrates startup order (DB VM first, Web VM second) and executes a
+              PowerShell Runbook via Managed Identity."
+            </p>
+          </div>
+
+          <div class="card">
+            <h3 style="color: var(--accent-cyan);">1:45 - 3:00 | Live Demo</h3>
+            <p style="margin-top: 12px; line-height: 1.6; font-size: 0.95rem;">
+              "Watch our live cutover! We triggered a Test Failover. The Recovery Plan automatically spins up target
+              compute in West US, executes our network runbook, and reattaches the pre-created Public IP seamlessly!"
+            </p>
+          </div>
+
+          <div class="card">
+            <h3 style="color: var(--accent-cyan);">3:00 - 5:00 | Metrics & Q&A</h3>
+            <p style="margin-top: 12px; line-height: 1.6; font-size: 0.95rem;">
+              "Our RTO is 4 minutes 30 seconds, and RPO is under 30 seconds. Zero secret key storage was required thanks
+              to Azure Managed Identities. Ready for Judge Q&A!"
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 4: RUNBOOK -->
+      <div id="runbook" class="tab-content">
         <div class="card">
-          <h3 style="color: var(--accent-cyan);">0:00 - 0:45 | Problem Context</h3>
-          <p style="margin-top: 12px; line-height: 1.6; font-size: 0.95rem;">
-            "Enterprise outages cost up to \$300k/hour. Traditional active-active setups double your cloud bill. Our solution delivers automated cross-region disaster recovery using Azure Site Recovery while keeping DR compute costs strictly \$0/hour until failover."
-          </p>
-        </div>
-
-        <div class="card">
-          <h3 style="color: var(--accent-cyan);">0:45 - 1:45 | Architecture</h3>
-          <p style="margin-top: 12px; line-height: 1.6; font-size: 0.95rem;">
-            "We deployed a 2-Tier app in East US. ASR continuously replicates disk deltas via a Cache Storage account to West US. Our Recovery Plan orchestrates startup order (DB VM first, Web VM second) and executes a PowerShell Runbook via Managed Identity."
-          </p>
-        </div>
-
-        <div class="card">
-          <h3 style="color: var(--accent-cyan);">1:45 - 3:00 | Live Demo</h3>
-          <p style="margin-top: 12px; line-height: 1.6; font-size: 0.95rem;">
-            "Watch our live cutover! We triggered a Test Failover. The Recovery Plan automatically spins up target compute in West US, executes our network runbook, and reattaches the pre-created Public IP seamlessly!"
-          </p>
-        </div>
-
-        <div class="card">
-          <h3 style="color: var(--accent-cyan);">3:00 - 5:00 | Metrics & Q&A</h3>
-          <p style="margin-top: 12px; line-height: 1.6; font-size: 0.95rem;">
-            "Our RTO is 4 minutes 30 seconds, and RPO is under 30 seconds. Zero secret key storage was required thanks to Azure Managed Identities. Ready for Judge Q&A!"
-          </p>
+          <h2>📘 5 Core AZ-104 Execution Tasks</h2>
+          <div style="margin-top: 20px; line-height: 1.8;">
+            <p><strong>Task 1:</strong> Provision Primary & DR Infrastructure via Azure CLI
+              (<code>scripts/01-deploy-primary-infra.sh</code> & <code>02-deploy-dr-infra.sh</code>).</p>
+            <p><strong>Task 2:</strong> Configure Network Mapping & Enable Site Recovery Protection in
+              <code>Contoso-ASR-Vault</code>.</p>
+            <p><strong>Task 3:</strong> Provision Automation Account, Managed Identity & Publish
+              <code>Attach-DR-PublicIP.ps1</code>.</p>
+            <p><strong>Task 4:</strong> Construct Sequenced Recovery Plan (Group 1: DB-VM, Group 2: Web-VM) +
+              Post-Action Script.</p>
+            <p><strong>Task 5:</strong> Execute Test Failover & Validate RTO / RPO Cutover on DR Public IP!</p>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- TAB 3: RUNBOOK -->
-    <div id="runbook" class="tab-content">
-      <div class="card">
-        <h2>📘 Phase-by-Phase Execution Timeline</h2>
-        <div style="margin-top: 20px; line-height: 1.8;">
-          <p><strong>Phase 1 (Hours 1-2):</strong> Run <code>1-deploy-base-infra.sh</code> and <code>2-deploy-dr-infra.sh</code> via Azure CLI.</p>
-          <p><strong>Phase 2 (Hours 3-4):</strong> Enable replication in Recovery Services Vault (Vault -> Replicated Items -> + Replicate).</p>
-          <p><strong>Phase 3 (Hours 5-6):</strong> Create Recovery Plan (Group 1: DB-VM, Group 2: Web-VM) + Add Post-Action PowerShell Runbook.</p>
-          <p><strong>Phase 4 (Hours 7-8):</strong> Execute Test Failover and verify DR public IP cutover!</p>
+      <!-- TAB 5: CODE FILES -->
+      <div id="code" class="tab-content">
+        <div class="card" style="margin-bottom: 24px;">
+          <h2>💻 Required Project Files & CLI Scripts</h2>
         </div>
-      </div>
-    </div>
 
-    <!-- TAB 4: CODE FILES -->
-    <div id="code" class="tab-content">
-      <div class="card" style="margin-bottom: 24px;">
-        <h2>💻 Required Project Files & CLI Scripts</h2>
-      </div>
-
-      <h3 style="margin-bottom: 12px;">1. `1-deploy-base-infra.azcli` (Primary East US)</h3>
-      <pre><code>az group create --name Contoso-App-Prod-RG --location eastus
+        <h3 style="margin-bottom: 12px;">1. `01-deploy-primary-infra.azcli` (Primary East US)</h3>
+        <pre><code>az group create --name Contoso-App-Prod-RG --location eastus
 az network vnet create --resource-group Contoso-App-Prod-RG --name VNet-Prod --address-prefix 10.0.0.0/16 --subnet-name Subnet-Web --subnet-prefix 10.0.1.0/24
 az vm create --resource-group Contoso-App-Prod-RG --name Web-VM --image Ubuntu2204 --vnet-name VNet-Prod --subnet Subnet-Web --admin-username azureuser --generate-ssh-keys --custom-data cloud-init-primary.txt</code></pre>
 
-      <h3 style="margin-top: 24px; margin-bottom: 12px;">2. `Attach-DR-PublicIP.ps1` (Automation Runbook)</h3>
-      <pre><code>Param([object]$RecoveryPlanContext)
+        <h3 style="margin-top: 24px; margin-bottom: 12px;">2. `Attach-DR-PublicIP.ps1` (Automation Runbook)</h3>
+        <pre><code>Param([object]$RecoveryPlanContext)
 $ErrorActionPreference = "Stop"
 Connect-AzAccount -Identity
 $TargetResourceGroup = "Contoso-App-DR-RG"
@@ -537,14 +571,14 @@ $NIC = Get-AzNetworkInterface -ResourceGroupName $TargetResourceGroup -Name $Nic
 $PublicIP = Get-AzPublicIpAddress -ResourceGroupName $TargetResourceGroup -Name $DrPublicIpName
 $NIC.IpConfigurations[0].PublicIpAddress = $PublicIP
 Set-AzNetworkInterface -NetworkInterface $NIC</code></pre>
-    </div>
+      </div>
   </main>
 
   <script>
     function switchTab(tabId) {
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-      
+
       event.target.classList.add('active');
       document.getElementById(tabId).classList.add('active');
     }
@@ -552,7 +586,7 @@ Set-AzNetworkInterface -NetworkInterface $NIC</code></pre>
     function runFailoverSimulation() {
       const consoleLog = document.getElementById('console-log');
       consoleLog.innerHTML = `[SIMULATION INITIATED] Triggering Test Failover for Recovery Plan: Contoso-App-Failover-Plan...<br>`;
-      
+
       setTimeout(() => {
         consoleLog.innerHTML += `[00:15] [ASR] Stopping disk replication sync to Primary (East US)...<br>`;
         document.getElementById('prod-status').innerText = 'FAILOVER';
@@ -582,4 +616,5 @@ Set-AzNetworkInterface -NetworkInterface $NIC</code></pre>
     }
   </script>
 </body>
+
 </html>
