@@ -1,0 +1,51 @@
+#!/bin/bash
+# Azure CLI Commands - Deploy Target DR Infrastructure & Recovery Vault (West US)
+
+# 1. Create DR Resource Group
+az group create --name Contoso-App-DR-RG --location westus
+
+# 2. Create Cache Storage Account in Primary Region
+CACHE_NAME="asrcache$RANDOM"
+az storage account create --name $CACHE_NAME --resource-group Contoso-App-Prod-RG \
+  --location eastus --sku Standard_LRS --kind StorageV2
+
+# 3. Create DR NSG & Rules
+az network nsg create --resource-group Contoso-App-DR-RG --name NSG-DR-Web --location westus
+
+az network nsg rule create --resource-group Contoso-App-DR-RG --nsg-name NSG-DR-Web \
+  --name Allow-HTTP --priority 100 --direction Inbound --access Allow --protocol Tcp --destination-port-ranges 80
+
+az network nsg rule create --resource-group Contoso-App-DR-RG --nsg-name NSG-DR-Web \
+  --name Allow-SSH --priority 110 --direction Inbound --access Allow --protocol Tcp --destination-port-ranges 22
+
+# 4. Create DR VNet & Subnets
+az network vnet create --resource-group Contoso-App-DR-RG \
+  --name VNet-DR --address-prefix 10.1.0.0/16 \
+  --subnet-name Subnet-Web-DR --subnet-prefix 10.1.1.0/24 \
+  --location westus
+
+az network vnet subnet create --resource-group Contoso-App-DR-RG \
+  --vnet-name VNet-DR --name Subnet-DB-DR --subnet-prefix 10.1.2.0/24
+
+az network vnet subnet update --resource-group Contoso-App-DR-RG \
+  --vnet-name VNet-DR --name Subnet-Web-DR --network-security-group NSG-DR-Web
+
+# 5. Pre-create Public IP for Cutover
+az network public-ip create --resource-group Contoso-App-DR-RG \
+  --name Web-VM-DR-PIP --location westus --sku Standard --allocation-method Static
+
+# 6. Create Recovery Services Vault
+az backup vault create --resource-group Contoso-App-DR-RG \
+  --name Contoso-ASR-Vault --location westus
+
+# 7. Create Automation Account & Assign RBAC Role
+az automation account create --resource-group Contoso-App-DR-RG \
+  --name Contoso-ASR-AutoAccount --location westus --sku Free
+
+PRINCIPAL_ID=$(az automation account identity assign --resource-group Contoso-App-DR-RG \
+  --name Contoso-ASR-AutoAccount --query principalId -o tsv)
+
+DR_RG_ID=$(az group show --name Contoso-App-DR-RG --query id -o tsv)
+
+az role assignment create --assignee "$PRINCIPAL_ID" \
+  --role "Network Contributor" --scope "$DR_RG_ID"

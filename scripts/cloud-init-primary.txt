@@ -1,0 +1,156 @@
+#cloud-config
+package_upgrade: true
+packages:
+  - nginx
+  - jq
+  - curl
+
+write_files:
+  - path: /var/www/html/index.html
+    content: |
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Contoso Business Portal - Primary Region (East US)</title>
+        <style>
+          :root {
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --border-color: #30363d;
+            --primary: #2f81f7;
+            --success: #238636;
+            --text: #c9d1d9;
+            --accent: #58a6ff;
+          }
+          body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+          }
+          .container {
+            max-width: 800px;
+            width: 100%;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+          }
+          .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background-color: rgba(47, 129, 247, 0.15);
+            color: var(--accent);
+            border: 1px solid var(--primary);
+            margin-bottom: 20px;
+          }
+          h1 {
+            color: #ffffff;
+            margin-top: 0;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+          }
+          .status-pulse {
+            width: 12px;
+            height: 12px;
+            background-color: var(--success);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--success);
+            animation: pulse 2s infinite;
+          }
+          @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(35, 134, 54, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(35, 134, 54, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(35, 134, 54, 0); }
+          }
+          .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-top: 24px;
+          }
+          .info-card {
+            background: #0d1117;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+          }
+          .info-card label {
+            font-size: 0.75rem;
+            color: #8b949e;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: block;
+            margin-bottom: 6px;
+          }
+          .info-card value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #f0f6fc;
+            display: block;
+          }
+          .footer {
+            margin-top: 32px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.85rem;
+            color: #8b949e;
+            display: flex;
+            justify-content: space-between;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="badge">PRIMARY REGION (LIVE PRODUCTION)</div>
+          <h1>
+            <span class="status-pulse"></span>
+            Contoso App - East US
+          </h1>
+          <p>This application tier is currently running in <strong>East US (Primary Region)</strong>. Continuous replication is active via Azure Site Recovery (ASR).</p>
+          
+          <div class="grid">
+            <div class="info-card">
+              <label>Current Region</label>
+              <value>East US (Primary)</value>
+            </div>
+            <div class="info-card">
+              <label>Virtual Network</label>
+              <value>VNet-Prod (10.0.0.0/16)</value>
+            </div>
+            <div class="info-card">
+              <label>Subnet</label>
+              <value>Subnet-Web (10.0.1.0/24)</value>
+            </div>
+            <div class="info-card">
+              <label>Replication Status</label>
+              <value style="color: #3fb950;">Healthy (ASR Synced)</value>
+            </div>
+          </div>
+
+          <div class="footer">
+            <span>AZ-104 Hackathon Project</span>
+            <span>Azure Site Recovery Demo</span>
+          </div>
+        </div>
+      </body>
+      </html>
+
+runcmd:
+  - systemctl enable nginx
+  - systemctl start nginx

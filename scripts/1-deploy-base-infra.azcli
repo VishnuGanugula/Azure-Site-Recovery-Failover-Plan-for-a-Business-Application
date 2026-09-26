@@ -1,0 +1,45 @@
+#!/bin/bash
+# Azure CLI Commands - Deploy Primary Production Infrastructure (East US)
+
+# 1. Create Prod Resource Group
+az group create --name Contoso-App-Prod-RG --location eastus
+
+# 2. Create Network Security Group & Rules
+az network nsg create --resource-group Contoso-App-Prod-RG --name NSG-Prod-Web --location eastus
+
+az network nsg rule create \
+  --resource-group Contoso-App-Prod-RG \
+  --nsg-name NSG-Prod-Web \
+  --name Allow-HTTP --priority 100 \
+  --direction Inbound --access Allow --protocol Tcp --destination-port-ranges 80
+
+az network nsg rule create \
+  --resource-group Contoso-App-Prod-RG \
+  --nsg-name NSG-Prod-Web \
+  --name Allow-SSH --priority 110 \
+  --direction Inbound --access Allow --protocol Tcp --destination-port-ranges 22
+
+# 3. Create Prod VNet & Subnets
+az network vnet create --resource-group Contoso-App-Prod-RG \
+  --name VNet-Prod --address-prefix 10.0.0.0/16 \
+  --subnet-name Subnet-Web --subnet-prefix 10.0.1.0/24 \
+  --location eastus
+
+az network vnet subnet create --resource-group Contoso-App-Prod-RG \
+  --vnet-name VNet-Prod --name Subnet-DB --subnet-prefix 10.0.2.0/24
+
+az network vnet subnet update --resource-group Contoso-App-Prod-RG \
+  --vnet-name VNet-Prod --name Subnet-Web --network-security-group NSG-Prod-Web
+
+# 4. Create Web VM with cloud-init
+az vm create --resource-group Contoso-App-Prod-RG \
+  --name Web-VM --image Ubuntu2204 --size Standard_B2s \
+  --vnet-name VNet-Prod --subnet Subnet-Web \
+  --admin-username azureuser --generate-ssh-keys \
+  --custom-data cloud-init-primary.txt
+
+# 5. Create Database VM
+az vm create --resource-group Contoso-App-Prod-RG \
+  --name DB-VM --image Ubuntu2204 --size Standard_B2s \
+  --vnet-name VNet-Prod --subnet Subnet-DB \
+  --admin-username azureuser --generate-ssh-keys
