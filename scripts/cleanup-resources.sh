@@ -1,24 +1,30 @@
 #!/bin/bash
 # ==============================================================================
 # Script Name: cleanup-resources.sh
-# Purpose    : Teardown all resources after Hackathon presentation
-# Project    : AZ-104 Hackathon - Azure Site Recovery (ASR) Failover
+# Purpose    : Teardown primary and DR resource groups
+# Project    : SpendWise 3-Tier Azure Site Recovery (ASR) Disaster Recovery
 # ==============================================================================
 
-echo "======================================================================"
-echo "⚠️  TEARDOWN: Deleting Azure Hackathon Resource Groups"
-echo "======================================================================"
-echo "This will delete: Contoso-App-Prod-RG and Contoso-App-DR-RG"
-read -p "Are you sure you want to delete all hackathon resources? (y/N): " confirm
+set -e
 
-if [[ "$confirm" == "y" || "$confirm" == "Y" ]]; then
-  echo "Deleting Contoso-App-Prod-RG..."
-  az group delete --name Contoso-App-Prod-RG --no-wait --yes
-  
-  echo "Deleting Contoso-App-DR-RG..."
-  az group delete --name Contoso-App-DR-RG --no-wait --yes
+PROD_RG="RG-ASR-24CC3046"
+DR_RG="RG-ASR-24CC3046-DR"
 
-  echo "✅ Cleanup initiated in background!"
+echo "======================================================================"
+echo "⚠️  WARNING: TEARDOWN OF ALL SPENDWISE ASR DEMO RESOURCES"
+echo "======================================================================"
+read -p "Are you sure you want to delete '$PROD_RG' and '$DR_RG'? (y/N) " confirm
+
+if [[ "$confirm" =~ ^[Yy]$ ]]; then
+    echo "--> Deleting Primary Resource Group ($PROD_RG)..."
+    az group delete --name "$PROD_RG" --yes --no-wait
+
+    echo "--> Deleting DR Resource Group ($DR_RG)..."
+    az group delete --name "$DR_RG" --yes --no-wait
+
+    echo "======================================================================"
+    echo "✅ Teardown requests submitted to Azure asynchronously."
+    echo "======================================================================"
 else
-  echo "Cleanup cancelled."
+    echo "Teardown cancelled."
 fi

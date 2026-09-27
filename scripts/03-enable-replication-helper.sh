@@ -1,18 +1,18 @@
 #!/bin/bash
 # ==============================================================================
-# Script Name: 3-enable-replication-helper.sh
-# Purpose    : Helper guidance & status verification for ASR Replication
-# Project    : AZ-104 Hackathon - Azure Site Recovery (ASR) Failover
+# Script Name: 03-enable-replication-helper.sh
+# Purpose    : Helper guidance & status verification for ASR 3-Tier Replication
+# Project    : SpendWise 3-Tier Azure Site Recovery (ASR) Disaster Recovery
 # ==============================================================================
 
 set -e
 
-PROD_RG="Contoso-App-Prod-RG"
-DR_RG="Contoso-App-DR-RG"
-VAULT_NAME="Contoso-ASR-Vault"
+PROD_RG="RG-ASR-24CC3046"
+DR_RG="RG-ASR-24CC3046-DR"
+VAULT_NAME="RSV-ASR-24CC3046"
 
 echo "======================================================================"
-echo "ℹ️  PHASE 2 HELPER: Azure Site Recovery Enable Replication & Status"
+echo "ℹ️  PHASE 3 HELPER: SpendWise ASR 3-Tier Replication & Vault Status"
 echo "======================================================================"
 
 echo "Checking deployed VMs in Primary Region ($PROD_RG)..."
@@ -26,13 +26,12 @@ echo ""
 echo "======================================================================"
 echo "📌 AZURE PORTAL STEPS TO ENABLE REPLICATION (Fastest Method):"
 echo "======================================================================"
-echo "1. Go to Azure Portal -> Resource Groups -> Contoso-App-Prod-RG"
-echo "2. Select 'Web-VM' -> In left menu under Operations, click 'Disaster recovery'"
-echo "3. Target region: Select 'West US'"
-echo "4. Target Resource Group: Select 'Contoso-App-DR-RG'"
-echo "5. Target Virtual Network: Select 'VNet-DR'"
-echo "6. Target Subnet: Select 'Subnet-Web-DR'"
-echo "7. Cache Storage Account: Select the 'asrcache*' account created in East US"
-echo "8. Click 'Review + Start replication'"
-echo "9. Repeat steps 2-8 for 'DB-VM' (Target Subnet: 'Subnet-DB-DR')"
+echo "1. Go to Azure Portal -> Resource Groups -> RG-ASR-24CC3046"
+echo "2. Select 'VM-WEB' -> Under Operations, click 'Disaster recovery'"
+echo "3. Target region: Select 'India South Central'"
+echo "4. Target Resource Group: Select 'RG-ASR-24CC3046-DR'"
+echo "5. Target Virtual Network: Select 'VNET-ASR-TEST'"
+echo "6. Target Subnet: Select 'SUBNET-TEST'"
+echo "7. Click 'Review + Start replication'"
+echo "8. Repeat steps 2-7 for 'VM-APP' and 'VM-DB'"
 echo "======================================================================"

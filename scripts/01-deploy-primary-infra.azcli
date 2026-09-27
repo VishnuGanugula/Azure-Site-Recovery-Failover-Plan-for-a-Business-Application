@@ -1,45 +1,60 @@
 #!/bin/bash
-# Azure CLI Commands - Deploy Primary Production Infrastructure (East US)
+# Azure CLI Commands - Deploy SpendWise Primary Infrastructure (Central India)
 
 # 1. Create Prod Resource Group
-az group create --name Contoso-App-Prod-RG --location eastus
+az group create --name RG-ASR-24CC3046 --location centralindia
 
 # 2. Create Network Security Group & Rules
-az network nsg create --resource-group Contoso-App-Prod-RG --name NSG-Prod-Web --location eastus
+az network nsg create --resource-group RG-ASR-24CC3046 --name NSG-PROD-SPENDWISE --location centralindia
 
 az network nsg rule create \
-  --resource-group Contoso-App-Prod-RG \
-  --nsg-name NSG-Prod-Web \
+  --resource-group RG-ASR-24CC3046 \
+  --nsg-name NSG-PROD-SPENDWISE \
   --name Allow-HTTP --priority 100 \
   --direction Inbound --access Allow --protocol Tcp --destination-port-ranges 80
 
 az network nsg rule create \
-  --resource-group Contoso-App-Prod-RG \
-  --nsg-name NSG-Prod-Web \
-  --name Allow-SSH --priority 110 \
+  --resource-group RG-ASR-24CC3046 \
+  --nsg-name NSG-PROD-SPENDWISE \
+  --name Allow-APP-5000 --priority 105 \
+  --direction Inbound --access Allow --protocol Tcp --destination-port-ranges 5000
+
+az network nsg rule create \
+  --resource-group RG-ASR-24CC3046 \
+  --nsg-name NSG-PROD-SPENDWISE \
+  --name Allow-DB-5432 --priority 110 \
+  --direction Inbound --access Allow --protocol Tcp --destination-port-ranges 5432
+
+az network nsg rule create \
+  --resource-group RG-ASR-24CC3046 \
+  --nsg-name NSG-PROD-SPENDWISE \
+  --name Allow-SSH --priority 120 \
   --direction Inbound --access Allow --protocol Tcp --destination-port-ranges 22
 
 # 3. Create Prod VNet & Subnets
-az network vnet create --resource-group Contoso-App-Prod-RG \
-  --name VNet-Prod --address-prefix 10.0.0.0/16 \
-  --subnet-name Subnet-Web --subnet-prefix 10.0.1.0/24 \
-  --location eastus
+az network vnet create --resource-group RG-ASR-24CC3046 \
+  --name VNET-ASR-PROD --address-prefix 10.10.0.0/16 \
+  --subnet-name SUBNET-WEB --subnet-prefix 10.10.1.0/24 \
+  --location centralindia
 
-az network vnet subnet create --resource-group Contoso-App-Prod-RG \
-  --vnet-name VNet-Prod --name Subnet-DB --subnet-prefix 10.0.2.0/24
+az network vnet subnet create --resource-group RG-ASR-24CC3046 \
+  --vnet-name VNET-ASR-PROD --name SUBNET-APP --subnet-prefix 10.10.2.0/24
 
-az network vnet subnet update --resource-group Contoso-App-Prod-RG \
-  --vnet-name VNet-Prod --name Subnet-Web --network-security-group NSG-Prod-Web
+az network vnet subnet create --resource-group RG-ASR-24CC3046 \
+  --vnet-name VNET-ASR-PROD --name SUBNET-DB --subnet-prefix 10.10.3.0/24
 
-# 4. Create Web VM with cloud-init
-az vm create --resource-group Contoso-App-Prod-RG \
-  --name Web-VM --image Ubuntu2204 --size Standard_B2s \
-  --vnet-name VNet-Prod --subnet Subnet-Web \
-  --admin-username azureuser --generate-ssh-keys \
-  --custom-data cloud-init-primary.txt
+# 4. Create 3-Tier VMs
+az vm create --resource-group RG-ASR-24CC3046 \
+  --name VM-DB --image Ubuntu2204 --size Standard_B2s \
+  --vnet-name VNET-ASR-PROD --subnet SUBNET-DB \
+  --admin-username azureuser --generate-ssh-keys
 
-# 5. Create Database VM
-az vm create --resource-group Contoso-App-Prod-RG \
-  --name DB-VM --image Ubuntu2204 --size Standard_B2s \
-  --vnet-name VNet-Prod --subnet Subnet-DB \
+az vm create --resource-group RG-ASR-24CC3046 \
+  --name VM-APP --image Ubuntu2204 --size Standard_B2s \
+  --vnet-name VNET-ASR-PROD --subnet SUBNET-APP \
+  --admin-username azureuser --generate-ssh-keys
+
+az vm create --resource-group RG-ASR-24CC3046 \
+  --name VM-WEB --image Ubuntu2204 --size Standard_B2s \
+  --vnet-name VNET-ASR-PROD --subnet SUBNET-WEB \
   --admin-username azureuser --generate-ssh-keys

@@ -1,9 +1,8 @@
 # 📑 Project Abstract: SpendWise 3-Tier Azure Site Recovery (ASR) Failover Plan
 
-> [!NOTE]
-> The full detailed project abstract and business documentation is also available in [`docs/Project-Abstract.md`](file:///Users/vishnuganugula/KLU/3.1/Azure/docs/Project-Abstract.md).
-
 ## 1. Executive Summary
+In modern enterprise cloud computing, system availability and data resilience are critical operational objectives. Unplanned outages caused by regional infrastructure failures, natural disasters, or connectivity disruptions can result in severe financial loss and reputational damage.
+
 This project demonstrates a comprehensive, end-to-end disaster recovery (DR) implementation for **SpendWise**—a production 3-Tier enterprise business application—using **Azure Site Recovery (ASR)**. The primary workload running in **Central India** (`centralindia`) consists of three dedicated virtual machine tiers: Database (`VM-DB`), Application (`VM-APP`), and Web (`VM-WEB`). ASR continuously replicates disk state asynchronously to **India South Central** (`indiasouthcentral`) so that the complete environment can be instantiated and validated following a regional disaster.
 
 ---

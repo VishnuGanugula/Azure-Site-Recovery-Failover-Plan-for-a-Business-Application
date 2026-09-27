@@ -1,130 +1,150 @@
-# ☁️ Azure Site Recovery (ASR) Failover Plan for Business Applications
+# ☁️ Azure Site Recovery (ASR) Three-Tier SpendWise Disaster Recovery Project
 
-[![AZ-104 Hackathon](https://img.shields.io/badge/AZ--104-Hackathon%20Project-0078D4?logo=microsoftazure&logoColor=white)](https://learn.microsoft.com/en-us/credentials/certifications/azure-administrator/)
-[![AZ-104 Domains](https://img.shields.io/badge/AZ--104-100%25%20Exam%20Mapped-success)](#-az-104-certification-domain-mapping)
-[![IaC Automation](https://img.shields.io/badge/IaC-Azure%20CLI%20%2B%20PowerShell-blue)](#-quick-deployment-guide)
-[![RTO Metric](https://img.shields.io/badge/RTO-4.5%20Mins-brightgreen)](#-business-value--rto--rpo-metrics)
+[![AZ-104 Project](https://img.shields.io/badge/AZ--104-Hackathon%20Project-0078D4?logo=microsoftazure&logoColor=white)](https://learn.microsoft.com/en-us/credentials/certifications/azure-administrator/)
+[![AZ-104 Domains](https://img.shields.io/badge/AZ--104-100%25%20Exam%20Mapped-success)](file:///Users/vishnuganugula/KLU/3.1/Azure/docs/Azure-Services.md)
+[![Primary Region](https://img.shields.io/badge/Primary-Central%20India-blue)](file:///Users/vishnuganugula/KLU/3.1/Azure/docs/Architecture.md)
+[![DR Region](https://img.shields.io/badge/Recovery-India%20South%20Central-teal)](file:///Users/vishnuganugula/KLU/3.1/Azure/docs/Architecture.md)
+[![Measured RTO](https://img.shields.io/badge/RTO-5%20Min%2024%20Sec-brightgreen)](file:///Users/vishnuganugula/KLU/3.1/Azure/docs/Failover-Plan.md)
 
-An enterprise-grade **Azure-to-Azure Site Recovery (ASR)** Disaster Recovery solution designed for the **AZ-104 Azure Administrator Hackathon**. This project demonstrates automated cross-region replication, sequenced Recovery Plan startup (Database → Web), and dynamic Public IP cutover using Azure Automation Account System-Assigned Managed Identity.
+An enterprise-grade **Azure-to-Azure Site Recovery (ASR)** Disaster Recovery solution designed for the 3-Tier **SpendWise** enterprise application. This project demonstrates automated cross-region replication between **Central India** (`centralindia`) and **India South Central** (`indiasouthcentral`), sequenced multi-tier Recovery Plan startup (`VM-DB` → `VM-APP` → `VM-WEB`), guest Linux kernel verification, ARM REST API test failover execution, and post-failover application/database configuration remediation.
+
+---
+
+## 👥 Project Team Members
+
+* **2400030408 - G Vishnu** (Team Lead)
+* **2400030412 - G Praneeth**
+* **2400030233 - Ch Mohan Krishna**
+* **2400030418 - K Yeswanth**
 
 ---
 
 ## 📂 Repository Directory Structure
 
 ```text
-├── README.md                        # Master Repository Documentation & Setup Guide
-├── Project-Abstract.md              # Executive summary, problem statement, BCDR business goals
-├── Azure-Services.md                # Technical deep-dive mapping all Azure services to AZ-104 domains
-├── Five-Tasks.md                    # Step-by-step hands-on guide for the 5 core AZ-104 tasks
-├── Failover-Plan.md                 # Disaster recovery failover plan execution runbook
-├── Architecture/
-│   ├── ARCHITECTURE.md              # Complete architecture specification & Mermaid topology
-│   ├── asr-failover-flowchart.html  # Interactive ASR lifecycle flowchart
-│   └── azure-to-azure-architecture.png # Architecture topology diagram image
-├── PPT/
-│   ├── PITCH_DECK.md                # 5-minute timed presentation pitch script & Q&A cheat sheet
-│   └── Azure-Site-Recovery-Failover-Plan.pptx # Hackathon presentation deck
-├── Screenshots/
-│   └── README.md                    # Visual proof guide for capturing hackathon screenshots
-├── scripts/
-│   ├── 01-deploy-primary-infra.sh   # Bash script: Deploys East US Primary Infrastructure
-│   ├── 01-deploy-primary-infra.azcli# Raw Azure CLI snippet for Primary Region
-│   ├── 02-deploy-dr-infra.sh        # Bash script: Deploys West US DR Infrastructure & Vault
-│   ├── 02-deploy-dr-infra.azcli     # Raw Azure CLI snippet for DR Region
-│   ├── 03-enable-replication-helper.sh# Replication configuration & verification helper
-│   ├── cloud-init-primary.txt       # Cloud-init configuration for Primary Nginx Web Server
-│   ├── Attach-DR-PublicIP.ps1       # PowerShell Runbook for Dynamic Network Cutover
-│   └── cleanup-resources.sh         # One-click Azure resource teardown script
-└── index.html                       # Standalone Interactive Visual Dashboard & Simulator
+.
+├── README.md                                         # Master Documentation & Executive Guide
+├── SpendWise_Azure_Site_Recovery_Complete_Procedure.pdf  # Primary Project Execution Document
+├── docs/                                             # Technical Documentation Suite
+│   ├── Project-Abstract.md                           # Project Abstract, Business Goals & Team Roster
+│   ├── Architecture.md                               # 3-Tier Architecture & Sequence Diagram
+│   ├── Five-Tasks.md                                 # 5 Core AZ-104 Hands-On Tasks Blueprint
+│   ├── Failover-Plan.md                              # Operational DR Runbook & Verification Steps
+│   ├── Azure-Services.md                             # Service Mapping to AZ-104 Exam Domains
+│   ├── Troubleshooting-Guide.md                      # Diagnostics, In-Guest Fixes & REST API Workaround
+│   └── Review-Cheat-Sheet.md                         # Review-Day Command Execution Sequence
+├── Architecture/                                     # Diagrams & Flowcharts
+│   ├── ARCHITECTURE.md                               # Detailed Technical Topology Specification
+│   ├── asr-failover-flowchart.html                   # Interactive 3-Tier ASR Visual Flowchart
+│   └── azure-to-azure-architecture.png              # Architecture Topology Visual Diagram
+├── PPT/                                              # Presentation Assets
+│   ├── PITCH_DECK.md                                 # 5-Minute Timed Pitch Script & Q&A Cheat Sheet
+│   └── Azure-Site-Recovery-Failover-Plan.pptx        # Presentation Slide Deck
+├── Screenshots/                                      # Execution Screenshots & Evidence
+│   └── README.md                                     # Evidence Mapping & Screenshots Index
+├── scripts/                                          # Automation & Execution Scripts
+│   ├── 01-deploy-primary-infra.sh                    # Deploy Central India 3-Tier Workload
+│   ├── 01-deploy-primary-infra.azcli                 # Azure CLI Reference for Primary Region
+│   ├── 02-deploy-dr-infra.sh                         # Deploy Vault & DR Network in India South Central
+│   ├── 02-deploy-dr-infra.azcli                      # Azure CLI Reference for DR Region
+│   ├── 03-enable-replication-helper.sh               # Enable A2A Protection & Recovery Plan
+│   ├── 04-trigger-test-failover-rest.sh              # Direct ARM REST API Test Failover Script
+│   ├── Attach-DR-PublicIP.ps1                        # PowerShell Runbook for Network Cutover
+│   ├── cloud-init-primary.txt                        # Cloud-init for App & Database Setup
+│   └── cleanup-resources.sh                          # Resource Teardown Script
+└── index.html                                        # Interactive Visual Dashboard & Simulator
 ```
 
 ---
 
-## 📐 Architecture Overview
+## 📐 3-Tier Architecture & Recovery Workflow
 
 ```mermaid
 flowchart TD
-    subgraph Primary["Primary Region: East US (Contoso-App-Prod-RG)"]
-        VNet1["VNet-Prod (10.0.0.0/16)"]
-        SubnetWeb1["Subnet-Web (10.0.1.0/24)"] --> WebVM["Web-VM (Ubuntu + Nginx)"]
-        SubnetDB1["Subnet-DB (10.0.2.0/24)"] --> DBVM["DB-VM (SQL Server Tier)"]
-        CacheStorage["Cache Storage Account (asrcache*)"]
-        WebVM -.-> CacheStorage
-        DBVM -.-> CacheStorage
+    subgraph Primary["Primary Region: Central India (RG-ASR-24CC3046)"]
+        VM_DB["VM-DB (Database Tier)\nPostgreSQL on TCP/5432"]
+        VM_APP["VM-APP (Application Tier)\nSpendWise Flask + Gunicorn on TCP/5000"]
+        VM_WEB["VM-WEB (Web Tier)\nWeb Gateway"]
+        CacheStorage["ASR Cache Storage Account\nStandard LRS Delta Buffer"]
+
+        VM_WEB -->|HTTP TCP/5000| VM_APP
+        VM_APP -->|PostgreSQL TCP/5432| VM_DB
+        VM_WEB -.-> CacheStorage
+        VM_APP -.-> CacheStorage
+        VM_DB -.-> CacheStorage
     end
 
-    subgraph ASR["Azure Site Recovery Engine"]
-        Vault["Recovery Services Vault (Contoso-ASR-Vault)"]
-        RecPlan["Recovery Plan: Contoso-App-Failover-Plan"]
+    subgraph ASR Engine["Azure Site Recovery"]
+        Vault["Recovery Services Vault\nRSV-ASR-24CC3046"]
+        RecPlan["Recovery Plan: RP-3TIER-APP\nGroup 1: DB | Group 2: APP | Group 3: WEB"]
     end
 
-    subgraph DR["Target DR Region: West US (Contoso-App-DR-RG)"]
-        VNet2["VNet-DR (10.1.0.0/16)"]
-        SubnetWeb2["Subnet-Web-DR (10.1.1.0/24)"] -.-> WebVM_DR["Target Web-VM"]
-        SubnetDB2["Subnet-DB-DR (10.1.2.0/24)"] -.-> DBVM_DR["Target DB-VM (Group 1 Startup)"]
-        AutoAccount["Azure Automation Account"]
-        Runbook["Attach-DR-PublicIP.ps1 (Post-Action)"]
-        PIP["Static Public IP (Web-VM-DR-PIP)"]
-        
-        AutoAccount -->|Managed Identity Auth| Runbook
-        Runbook -->|Attaches PIP| WebVM_DR
+    subgraph DR Region["Target DR Region: India South Central (RG-ASR-24CC3046-DR)"]
+        VNetDR["VNet: VNET-ASR-TEST / Subnet: SUBNET-TEST (10.30.1.0/24)"]
+        VM_DB_TEST["VM-DB-test (10.30.1.4)\nPostgreSQL (pg_hba updated)"]
+        VM_APP_TEST["VM-APP-test (10.30.1.5)\nSpendWise App (app.py updated)"]
+        VM_WEB_TEST["VM-WEB-test (10.30.1.6)\nHealth Check Client"]
+
+        VNetDR --- VM_DB_TEST
+        VNetDR --- VM_APP_TEST
+        VNetDR --- VM_WEB_TEST
+        VM_WEB_TEST -->|HTTP 200 Health Check| VM_APP_TEST
+        VM_APP_TEST -->|Authenticated Query| VM_DB_TEST
     end
 
-    CacheStorage ==>|Continuous Delta Replication| DR
+    CacheStorage ==>|Continuous Asynchronous Delta Replication| DR Region
     Vault --> RecPlan
-    RecPlan -->|Triggers Startup & Post-Action| DR
+    RecPlan -->|Executes ARM REST Test Failover| DR Region
 ```
 
 ---
 
 ## 🎓 AZ-104 Certification Domain Mapping
 
-This project is built using official Microsoft Learn guidelines for the **AZ-104 Azure Administrator Associate** certification:
+This project maps directly to official Microsoft Learn guidelines for the **AZ-104 Azure Administrator Associate** certification:
 
 | AZ-104 Exam Domain | Domain Weight | Implementation in Project | Document Link |
 | :--- | :--- | :--- | :--- |
-| **Domain 1: Identities & Governance** | 15–20% | System-Assigned Managed Identity on Automation Account with RBAC Network Contributor role on `Contoso-App-DR-RG`. | [`Azure-Services.md`](file:///Users/vishnuganugula/KLU/3.1/Azure/Azure-Services.md#1-system-assigned-managed-identity) |
-| **Domain 2: Implement & Manage Storage** | 15–20% | Standard LRS Managed Disks & `asrcachestorage*` Blob storage staging account for ASR. | [`Azure-Services.md`](file:///Users/vishnuganugula/KLU/3.1/Azure/Azure-Services.md#-az-104-domain-2-implement-and-manage-storage-1520) |
-| **Domain 3: Deploy & Manage Compute** | 20–25% | Automated VM provisioning via Azure CLI, Cloud-Init custom Nginx scripts, and PowerShell runbooks. | [`Five-Tasks.md`](file:///Users/vishnuganugula/KLU/3.1/Azure/Five-Tasks.md#task-1-provision-primary--disaster-recovery-infrastructure-cli-automation) |
-| **Domain 4: Virtual Networking** | 20–25% | Non-overlapping VNets (`10.0.0.0/16` vs `10.1.0.0/16`), NSGs (Ports 80/22), Static Public IPs, & ASR Network Mapping. | [`Architecture/ARCHITECTURE.md`](file:///Users/vishnuganugula/KLU/3.1/Azure/Architecture/ARCHITECTURE.md#2-component-specifications) |
-| **Domain 5: Monitor & Maintain Resources** | 10–15% | Recovery Services Vault (`Contoso-ASR-Vault`), ordered Recovery Plans, & ASR continuous replication. | [`Failover-Plan.md`](file:///Users/vishnuganugula/KLU/3.1/Azure/Failover-Plan.md#4-failover-execution-workflow) |
+| **Domain 1: Identities & Governance** | 15–20% | Resource group isolation (`RG-ASR-24CC3046` vs `RG-ASR-24CC3046-DR`), RBAC management, and managed identities. | [`Azure-Services.md`](file:///Users/vishnuganugula/KLU/3.1/Azure/docs/Azure-Services.md) |
+| **Domain 2: Implement & Manage Storage** | 15–20% | Managed OS disks (`Standard_LRS`) continuous replication and ASR staging buffer cache storage accounts. | [`Azure-Services.md`](file:///Users/vishnuganugula/KLU/3.1/Azure/docs/Azure-Services.md) |
+| **Domain 3: Deploy & Manage Compute** | 20–25% | Linux VM deployment, `az vm run-command` guest kernel verification (`5.15.0-1003-azure`), and in-guest config updates. | [`Five-Tasks.md`](file:///Users/vishnuganugula/KLU/3.1/Azure/docs/Five-Tasks.md) |
+| **Domain 4: Virtual Networking** | 20–25% | Test network isolation (`VNET-ASR-TEST` / `SUBNET-TEST`), subnet routing (`10.30.1.0/24`), and NIC verification. | [`Architecture.md`](file:///Users/vishnuganugula/KLU/3.1/Azure/docs/Architecture.md) |
+| **Domain 5: Monitor & Maintain Resources**| 10–15% | Recovery Services Vault (`RSV-ASR-24CC3046`), ordered Recovery Plan (`RP-3TIER-APP`), and job monitoring. | [`Failover-Plan.md`](file:///Users/vishnuganugula/KLU/3.1/Azure/docs/Failover-Plan.md) |
 
 ---
 
-## ⚡ Quick Deployment Guide
+## ⚡ Quick Start & Deployment Sequence
 
-### Step 1: Deploy Primary Infrastructure (`East US`)
-Run the deployment script to spin up the Primary Resource Group, VNet, Subnets, NSG rules, and VMs:
+### 1. Deploy Primary Infrastructure (`Central India`)
+Run the deployment script to create resource group `RG-ASR-24CC3046` and spin up `VM-DB`, `VM-APP`, and `VM-WEB`:
 ```bash
 chmod +x scripts/*.sh
 ./scripts/01-deploy-primary-infra.sh
 ```
 
-### Step 2: Deploy DR Infrastructure (`West US`)
-Run the secondary script to provision the target DR VNet, Recovery Services Vault, Cache Storage Account, and Automation Account with Managed Identity:
+### 2. Deploy DR Infrastructure & Vault (`India South Central`)
+Deploy the Recovery Services Vault `RSV-ASR-24CC3046`, target network `VNET-ASR-TEST`, and cache storage account:
 ```bash
 ./scripts/02-deploy-dr-infra.sh
 ```
 
-### Step 3: Enable Site Recovery Protection
-Follow the step-by-step instructions in [`Five-Tasks.md`](file:///Users/vishnuganugula/KLU/3.1/Azure/Five-Tasks.md) to enable VM replication in `Contoso-ASR-Vault`.
+### 3. Configure ASR Replication & Build Recovery Plan
+Follow [`docs/Five-Tasks.md`](file:///Users/vishnuganugula/KLU/3.1/Azure/docs/Five-Tasks.md) to register container mapping, enable protection for all three VMs, and assemble recovery plan `RP-3TIER-APP`.
 
-### Step 4: Import Runbook & Build Recovery Plan
-Import [`scripts/Attach-DR-PublicIP.ps1`](file:///Users/vishnuganugula/KLU/3.1/Azure/scripts/Attach-DR-PublicIP.ps1) into `Contoso-ASR-AutoAccount` and link as a Post-Action to **Group 2** of your ASR Recovery Plan.
-
-### Step 5: Test Failover & Presentation
-Execute a **Test Failover** and open [`index.html`](file:///Users/vishnuganugula/KLU/3.1/Azure/index.html) in your browser for an interactive architecture visualizer and failover simulator to present to the judges!
-
----
-
-## 📈 Business Value & Metrics
-* **RTO (Recovery Time Objective):** **4 min 30 sec** *(Target < 10 min)*
-* **RPO (Recovery Point Objective):** **< 30 sec** *(Continuous delta disk sync)*
-* **Idle Cost:** **\$0 compute cost** in DR region while standby.
-
----
-
-## 🧹 Teardown Resources
+### 4. Trigger Test Failover (ARM REST API)
+Initiate test failover into the isolated test network using direct REST API execution:
 ```bash
-./scripts/cleanup-resources.sh
+./scripts/04-trigger-test-failover-rest.sh
 ```
+
+### 5. Review-Day Demonstration & Health Check
+Run the 7-step presentation cheat sheet in [`docs/Review-Cheat-Sheet.md`](file:///Users/vishnuganugula/KLU/3.1/Azure/docs/Review-Cheat-Sheet.md) or launch [`index.html`](file:///Users/vishnuganugula/KLU/3.1/Azure/index.html) in your browser for the visual dashboard and interactive failover simulator!
+
+---
+
+## 📈 Measured Business Value & Operational Results
+
+* **Recovery Time Objective (RTO):** **5 minutes 24 seconds** *(Job start 22:04:19 to 22:09:43 UTC)*.
+* **Recovery Point Objective (RPO):** **< 30 seconds** *(Continuous block-level delta sync)*.
+* **Application Health:** SpendWise endpoint `http://10.30.1.5:5000/health` returning `HTTP 200 OK` (`{"application":"SpendWise","database":"connected","status":"healthy"}`).
+* **Idle Cost:** **$0 compute cost** in India South Central secondary region during standby.

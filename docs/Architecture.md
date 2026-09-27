@@ -1,4 +1,4 @@
-# 📐 System Architecture & 3-Tier Cross-Region Technical Blueprint
+# 📐 System Architecture & 3-Tier Cross-Region Topology
 
 ## 1. High-Level Architecture Overview
 
@@ -64,7 +64,7 @@ flowchart TD
 
 ---
 
-## 2. Technical Component Matrix
+## 2. Component Specifications & Environment Mapping
 
 | Resource Category | Resource Name / Value | Description & Purpose |
 | :--- | :--- | :--- |
@@ -77,3 +77,28 @@ flowchart TD
 | **Recovery Plan** | `RP-3TIER-APP` | 3-Boot-Group plan ordering DB → APP → WEB recovery |
 | **Test Network / Subnet** | `VNET-ASR-TEST` / `SUBNET-TEST` | Isolated DR network (`10.30.1.0/24`) preventing production bleed |
 | **Protected Items** | `PI-VM-DB`, `PI-VM-APP`, `PI-VM-WEB` | ASR protected item representations for each tier |
+
+---
+
+## 3. 3-Tier Network & Service Interaction Details
+
+### Tier 1: Database Tier (`VM-DB` / `VM-DB-test`)
+- **IP Address (DR):** `10.30.1.4`
+- **NIC:** `VM-DBVMNic-test`
+- **Service:** PostgreSQL 14 Database
+- **Port:** TCP `5432`
+- **Post-Failover Adjustment:** Added `host spendwise spenduser 10.30.1.0/24 scram-sha-256` entry to `/etc/postgresql/14/main/pg_hba.conf` and reloaded PostgreSQL service to allow connections from DR app tier.
+
+### Tier 2: Application Tier (`VM-APP` / `VM-APP-test`)
+- **IP Address (DR):** `10.30.1.5`
+- **NIC:** `VM-APPVMNic-test`
+- **Service:** SpendWise Flask Application served by Gunicorn (`spendwise.service`)
+- **Port:** TCP `5000`
+- **Post-Failover Adjustment:** Modified `/opt/spendwise/app.py` setting `DB_HOST = "10.30.1.4"` (updated from primary IP `10.10.3.4`) and restarted `spendwise.service`.
+
+### Tier 3: Web Tier (`VM-WEB` / `VM-WEB-test`)
+- **IP Address (DR):** `10.30.1.6`
+- **NIC:** `VM-WEBVMNic-test`
+- **Service:** Nginx Web Interface & Application Gateway
+- **OS Kernel Verification:** Upgraded kernel from `6.8.0-1064-azure` to `5.15.0-1003-azure` via Azure Run Command.
+- **Validation Route:** Calls `http://10.30.1.5:5000/health` and receives HTTP 200 OK.

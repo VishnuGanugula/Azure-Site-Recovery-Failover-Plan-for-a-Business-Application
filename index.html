@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AZ-104 Hackathon: Azure Site Recovery Dashboard & Presentation Kit</title>
+  <title>SpendWise 3-Tier Azure Site Recovery (ASR) Dashboard & Simulator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -139,10 +139,10 @@
       }
     }
 
-    /* Grid & Cards */
+    /* Dashboard Grid */
     .dashboard-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 24px;
       margin-bottom: 32px;
     }
@@ -191,7 +191,6 @@
       border-radius: 16px;
       padding: 32px;
       position: relative;
-      overflow: hidden;
     }
 
     .regions-grid {
@@ -202,11 +201,11 @@
     }
 
     .region-box {
-      border: 2px dashed #30363d;
+      border: 2px dashed var(--card-border);
       border-radius: 12px;
-      padding: 24px;
-      background: rgba(22, 27, 34, 0.5);
-      position: relative;
+      padding: 20px;
+      background: rgba(13, 17, 23, 0.6);
+      transition: all 0.3s ease;
     }
 
     .region-box.primary {
@@ -214,7 +213,7 @@
     }
 
     .region-box.dr {
-      border-color: var(--warning-amber);
+      border-color: var(--accent-cyan);
     }
 
     .region-title {
@@ -222,12 +221,12 @@
       font-weight: 700;
       margin-bottom: 16px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
     }
 
     .vm-card {
-      background: var(--code-bg);
+      background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 8px;
       padding: 12px 16px;
@@ -237,20 +236,43 @@
       align-items: center;
     }
 
-    .vm-status {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--success-green);
-      box-shadow: 0 0 8px var(--success-green);
+    .vm-name {
+      font-weight: 600;
+      font-size: 0.9rem;
     }
 
-    .vm-status.off {
-      background: #484f58;
-      box-shadow: none;
+    .vm-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
     }
 
-    .sync-bridge {
+    .status-pill {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 12px;
+      text-transform: uppercase;
+    }
+
+    .status-healthy {
+      background: rgba(35, 134, 54, 0.2);
+      color: #3fb950;
+      border: 1px solid var(--success-green);
+    }
+
+    .status-standby {
+      background: rgba(210, 153, 34, 0.2);
+      color: var(--warning-amber);
+      border: 1px solid var(--warning-amber);
+    }
+
+    .status-failover {
+      background: rgba(56, 189, 248, 0.2);
+      color: var(--accent-cyan);
+      border: 1px solid var(--accent-cyan);
+    }
+
+    .asr-pipe {
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -258,361 +280,428 @@
       gap: 8px;
     }
 
-    .sync-arrow {
+    .pipe-line {
       width: 100%;
       height: 4px;
-      background: linear-gradient(90deg, var(--primary-blue), var(--warning-amber));
-      position: relative;
+      background: linear-gradient(90deg, var(--primary-blue), var(--accent-cyan));
       border-radius: 2px;
+      position: relative;
       overflow: hidden;
     }
 
-    .sync-dot {
-      width: 12px;
-      height: 12px;
-      background: white;
-      border-radius: 50%;
+    .pipe-pulse {
       position: absolute;
-      top: -4px;
-      animation: syncMove 2s infinite linear;
+      top: 0;
+      left: -50%;
+      width: 50%;
+      height: 100%;
+      background: white;
       box-shadow: 0 0 10px white;
+      animation: pipeFlow 2s infinite linear;
     }
 
-    @keyframes syncMove {
-      0% {
-        left: 0%;
-      }
-
-      100% {
-        left: 100%;
-      }
+    @keyframes pipeFlow {
+      0% { left: -50%; }
+      100% { left: 100%; }
     }
 
-    /* Simulation Control Console */
-    .console-box {
-      background: var(--code-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      font-family: var(--font-mono);
-      padding: 20px;
-      height: 280px;
-      overflow-y: auto;
+    /* Simulator Controls */
+    .sim-controls {
+      display: flex;
+      gap: 16px;
       margin-top: 24px;
-      color: #38bdf8;
-      font-size: 0.85rem;
-      line-height: 1.6;
     }
 
     .btn {
-      background: var(--primary-blue);
-      color: white;
-      border: none;
       padding: 12px 24px;
       border-radius: 8px;
       font-weight: 700;
       font-size: 0.95rem;
       cursor: pointer;
-      transition: all 0.2s;
-      box-shadow: 0 0 15px var(--primary-glow);
-    }
-
-    .btn:hover {
-      background: #1d4ed8;
-      transform: translateY(-2px);
-    }
-
-    .btn-warning {
-      background: var(--warning-amber);
-      color: #000;
-      box-shadow: 0 0 15px rgba(210, 153, 34, 0.4);
-    }
-
-    /* Embedded Flowchart iframe */
-    .flow-iframe {
-      width: 100%;
-      height: 820px;
       border: none;
-      border-radius: 12px;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    /* Code Display */
-    pre {
+    .btn-danger {
+      background: linear-gradient(135deg, #da3633, #b91c1c);
+      color: white;
+      box-shadow: 0 0 15px rgba(218, 54, 51, 0.4);
+    }
+
+    .btn-danger:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 25px rgba(218, 54, 51, 0.6);
+    }
+
+    .btn-secondary {
+      background: var(--surface-bright);
+      color: var(--text-main);
+      border: 1px solid var(--card-border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--card-border);
+    }
+
+    /* Console Output */
+    .console-log {
       background: var(--code-bg);
       border: 1px solid var(--card-border);
       border-radius: 8px;
       padding: 16px;
-      overflow-x: auto;
-      font-family: var(--font-mono);
+      font-family: var(--ff-mono);
       font-size: 0.85rem;
-      color: #c9d1d9;
-      position: relative;
+      color: #7ee787;
+      height: 220px;
+      overflow-y: auto;
+      margin-top: 16px;
+    }
+
+    .team-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+    }
+
+    .team-table th, .team-table td {
+      text-align: left;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--card-border);
+      font-size: 0.9rem;
+    }
+
+    .team-table th {
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    footer {
+      border-top: 1px solid var(--card-border);
+      padding: 24px 32px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-top: 40px;
     }
   </style>
 </head>
 
 <body>
-
   <header>
     <div class="brand">
-      <div class="logo-badge">AZ-104</div>
-      <h1>Azure Site Recovery Failover Kit</h1>
+      <div class="logo-badge">SPENDWISE ASR</div>
+      <h1>Three-Tier Disaster Recovery Dashboard</h1>
     </div>
-    <div class="nav-tabs">
-      <button class="tab-btn active" onclick="switchTab('arch')">Architecture & Demo</button>
-      <button class="tab-btn" onclick="switchTab('flow')">ASR Lifecycle Flowchart</button>
-      <button class="tab-btn" onclick="switchTab('presentation')">Pitch Deck & Q&A</button>
-      <button class="tab-btn" onclick="switchTab('runbook')">Step-by-Step Tasks</button>
-      <button class="tab-btn" onclick="switchTab('code')">Required Files & CLI</button>
-    </div>
+    <nav class="nav-tabs">
+      <button class="tab-btn active" onclick="switchTab('overview')">Overview</button>
+      <button class="tab-btn" onclick="switchTab('simulator')">Live Failover Simulator</button>
+      <button class="tab-btn" onclick="switchTab('team')">Team Roster</button>
+      <button class="tab-btn" onclick="switchTab('cheatsheet')">Cheat Sheet</button>
+    </nav>
   </header>
 
   <main>
-    <!-- TAB 1: ARCHITECTURE & SIMULATOR -->
-    <div id="arch" class="tab-content active">
+    <!-- TAB 1: OVERVIEW -->
+    <div id="overview" class="tab-content active">
       <div class="dashboard-grid">
         <div class="card">
           <div class="card-header">
-            <span class="card-title">Primary Region (Active)</span>
-            <span style="color: var(--accent-cyan); font-weight: 700;">East US</span>
+            <span class="card-title">⏱️ Measured RTO</span>
+            <span class="status-pill status-healthy">Empirical</span>
           </div>
-          <div class="stat-value" id="prod-status">LIVE 100%</div>
-          <div class="stat-label">VNet-Prod (10.0.0.0/16) • Web-VM & DB-VM</div>
+          <div class="stat-value">5m 24s</div>
+          <div class="stat-label">Target &lt; 10 min (Job 7df5bc18... Succeeded)</div>
         </div>
 
         <div class="card">
           <div class="card-header">
-            <span class="card-title">DR Region (Standby)</span>
-            <span style="color: var(--warning-amber); font-weight: 700;">West US</span>
+            <span class="card-title">🔄 Continuous RPO</span>
+            <span class="status-pill status-healthy">Live A2A Sync</span>
           </div>
-          <div class="stat-value" id="dr-status" style="color: var(--text-muted);">STANDBY</div>
-          <div class="stat-label">VNet-DR (10.1.0.0/16) • Compute \$0/hr</div>
+          <div class="stat-value">&lt; 30 sec</div>
+          <div class="stat-label">POLICY-A2A-SPENDWISE Block-Level Sync</div>
         </div>
 
         <div class="card">
           <div class="card-header">
-            <span class="card-title">Recovery Time Objective</span>
-            <span style="color: var(--success-green); font-weight: 700;">Measured RTO</span>
+            <span class="card-title">💰 DR Idle Compute Cost</span>
+            <span class="status-pill status-healthy">Optimized</span>
           </div>
-          <div class="stat-value" id="rto-timer" style="color: var(--success-green);">4m 30s</div>
-          <div class="stat-label">Target RTO: < 10 mins • Target RPO: < 30 secs</div>
-          </div>
+          <div class="stat-value">$0.00 / hr</div>
+          <div class="stat-label">Zero compute expense until DR failover</div>
         </div>
 
-        <!-- ARCHITECTURE DIAGRAM -->
-        <div class="arch-container">
-          <div style="display: flex; justify-content: space-between; margin-bottom: 24px;">
-            <h2>Azure-to-Azure Site Recovery Topology</h2>
-            <button class="btn btn-warning" onclick="runFailoverSimulation()">⚡ Execute Test Failover
-              Simulation</button>
-          </div>
-
-          <div class="regions-grid">
-            <!-- PRIMARY REGION -->
-            <div class="region-box primary">
-              <div class="region-title">
-                <span>Primary: East US</span>
-                <span style="color: var(--primary-blue); font-size: 0.8rem;">Contoso-App-Prod-RG</span>
-              </div>
-              <div class="vm-card">
-                <div>
-                  <strong>Web-VM</strong>
-                  <div style="font-size: 0.75rem; color: var(--text-muted);">10.0.1.4 • Nginx Web</div>
-                </div>
-                <div class="vm-status" id="prod-web-status"></div>
-              </div>
-              <div class="vm-card">
-                <div>
-                  <strong>DB-VM</strong>
-                  <div style="font-size: 0.75rem; color: var(--text-muted);">10.0.2.4 • SQL Database</div>
-                </div>
-                <div class="vm-status" id="prod-db-status"></div>
-              </div>
-              <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 12px;">
-                💾 Disks syncing to Cache Storage: <code>asrcachestorage</code>
-              </div>
-            </div>
-
-            <!-- SYNC BRIDGE -->
-            <div class="sync-bridge">
-              <span style="font-size: 0.75rem; font-weight: 700; color: var(--accent-cyan);">ASR Vault</span>
-              <div class="sync-arrow">
-                <div class="sync-dot"></div>
-              </div>
-              <span style="font-size: 0.7rem; color: var(--text-muted);">Delta Sync</span>
-            </div>
-
-            <!-- DR REGION -->
-            <div class="region-box dr">
-              <div class="region-title">
-                <span>Secondary: West US</span>
-                <span style="color: var(--warning-amber); font-size: 0.8rem;">Contoso-App-DR-RG</span>
-              </div>
-              <div class="vm-card">
-                <div>
-                  <strong>DB-VM (Target)</strong>
-                  <div style="font-size: 0.75rem; color: var(--text-muted);" id="dr-db-sub">Group 1 • Subnet-DB-DR</div>
-                </div>
-                <div class="vm-status off" id="dr-db-status"></div>
-              </div>
-              <div class="vm-card">
-                <div>
-                  <strong>Web-VM (Target)</strong>
-                  <div style="font-size: 0.75rem; color: var(--text-muted);" id="dr-web-sub">Group 2 • Subnet-Web-DR
-                  </div>
-                </div>
-                <div class="vm-status off" id="dr-web-status"></div>
-              </div>
-              <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 12px;">
-                ⚡ Post-Action: <code>Attach-DR-PublicIP.ps1</code>
-              </div>
-            </div>
-          </div>
-
-          <!-- SIMULATION LOG CONSOLE -->
-          <div class="console-box" id="console-log">
-            [INFO] System Ready. Primary region active in East US. Click 'Execute Test Failover Simulation' to view
-            real-time ASR orchestration logs...
-          </div>
-        </div>
-      </div>
-
-      <!-- TAB 2: INTERACTIVE FLOWCHART -->
-      <div id="flow" class="tab-content">
-        <div class="card" style="padding: 12px;">
-          <iframe src="Architecture/asr-failover-flowchart.html" class="flow-iframe"></iframe>
-        </div>
-      </div>
-
-      <!-- TAB 3: PITCH DECK & Q&A -->
-      <div id="presentation" class="tab-content">
-        <div class="card" style="margin-bottom: 24px;">
-          <h2>🎤 5-Minute Timed Hackathon Pitch Script</h2>
-          <p style="color: var(--text-muted); margin-top: 8px;">Use this structure to wow the judges during presentation
-            round.</p>
-        </div>
-
-        <div class="dashboard-grid">
-          <div class="card">
-            <h3 style="color: var(--accent-cyan);">0:00 - 0:45 | Problem Context</h3>
-            <p style="margin-top: 12px; line-height: 1.6; font-size: 0.95rem;">
-              "Enterprise outages cost up to \$300k/hour. Traditional active-active setups double your cloud bill. Our
-              solution delivers automated cross-region disaster recovery using Azure Site Recovery while keeping DR
-              compute costs strictly \$0/hour until failover."
-            </p>
-          </div>
-
-          <div class="card">
-            <h3 style="color: var(--accent-cyan);">0:45 - 1:45 | Architecture</h3>
-            <p style="margin-top: 12px; line-height: 1.6; font-size: 0.95rem;">
-              "We deployed a 2-Tier app in East US. ASR continuously replicates disk deltas via a Cache Storage account
-              to West US. Our Recovery Plan orchestrates startup order (DB VM first, Web VM second) and executes a
-              PowerShell Runbook via Managed Identity."
-            </p>
-          </div>
-
-          <div class="card">
-            <h3 style="color: var(--accent-cyan);">1:45 - 3:00 | Live Demo</h3>
-            <p style="margin-top: 12px; line-height: 1.6; font-size: 0.95rem;">
-              "Watch our live cutover! We triggered a Test Failover. The Recovery Plan automatically spins up target
-              compute in West US, executes our network runbook, and reattaches the pre-created Public IP seamlessly!"
-            </p>
-          </div>
-
-          <div class="card">
-            <h3 style="color: var(--accent-cyan);">3:00 - 5:00 | Metrics & Q&A</h3>
-            <p style="margin-top: 12px; line-height: 1.6; font-size: 0.95rem;">
-              "Our RTO is 4 minutes 30 seconds, and RPO is under 30 seconds. Zero secret key storage was required thanks
-              to Azure Managed Identities. Ready for Judge Q&A!"
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <!-- TAB 4: RUNBOOK -->
-      <div id="runbook" class="tab-content">
         <div class="card">
-          <h2>📘 5 Core AZ-104 Execution Tasks</h2>
-          <div style="margin-top: 20px; line-height: 1.8;">
-            <p><strong>Task 1:</strong> Provision Primary & DR Infrastructure via Azure CLI
-              (<code>scripts/01-deploy-primary-infra.sh</code> & <code>02-deploy-dr-infra.sh</code>).</p>
-            <p><strong>Task 2:</strong> Configure Network Mapping & Enable Site Recovery Protection in
-              <code>Contoso-ASR-Vault</code>.</p>
-            <p><strong>Task 3:</strong> Provision Automation Account, Managed Identity & Publish
-              <code>Attach-DR-PublicIP.ps1</code>.</p>
-            <p><strong>Task 4:</strong> Construct Sequenced Recovery Plan (Group 1: DB-VM, Group 2: Web-VM) +
-              Post-Action Script.</p>
-            <p><strong>Task 5:</strong> Execute Test Failover & Validate RTO / RPO Cutover on DR Public IP!</p>
+          <div class="card-header">
+            <span class="card-title">🌐 Health Validation</span>
+            <span class="status-pill status-healthy">HTTP 200 OK</span>
+          </div>
+          <div class="stat-value">Healthy</div>
+          <div class="stat-label">{"application":"SpendWise","database":"connected"}</div>
+        </div>
+      </div>
+
+      <!-- Architecture Topology Card -->
+      <div class="arch-container">
+        <h2 style="margin-bottom: 8px;">3-Tier Cross-Region Topology</h2>
+        <p style="color: var(--text-muted); margin-bottom: 24px; font-size: 0.9rem;">
+          Primary Workload in <strong>Central India</strong> (<code>RG-ASR-24CC3046</code>) continuously replicated to <strong>India South Central</strong> (<code>RG-ASR-24CC3046-DR</code>).
+        </p>
+
+        <div class="regions-grid">
+          <!-- Primary Region -->
+          <div class="region-box primary">
+            <div class="region-title">
+              <span>🇮🇳 Central India (Primary)</span>
+              <span class="status-pill status-healthy">Active</span>
+            </div>
+
+            <div class="vm-card">
+              <div>
+                <div class="vm-name">VM-DB (Database)</div>
+                <div class="vm-sub">PostgreSQL 14 • TCP/5432</div>
+              </div>
+              <span class="status-pill status-healthy">Protected</span>
+            </div>
+
+            <div class="vm-card">
+              <div>
+                <div class="vm-name">VM-APP (Application)</div>
+                <div class="vm-sub">SpendWise Flask + Gunicorn • TCP/5000</div>
+              </div>
+              <span class="status-pill status-healthy">Protected</span>
+            </div>
+
+            <div class="vm-card">
+              <div>
+                <div class="vm-name">VM-WEB (Web Tier)</div>
+                <div class="vm-sub">Web Gateway • Kernel 5.15</div>
+              </div>
+              <span class="status-pill status-healthy">Protected</span>
+            </div>
+          </div>
+
+          <!-- Pipe -->
+          <div class="asr-pipe">
+            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700;">ASR A2A</span>
+            <div class="pipe-line">
+              <div class="pipe-pulse"></div>
+            </div>
+            <span style="font-size: 0.7rem; color: var(--accent-cyan);">RP-3TIER-APP</span>
+          </div>
+
+          <!-- DR Region -->
+          <div class="region-box dr">
+            <div class="region-title">
+              <span>🇮🇳 India South Central (DR)</span>
+              <span class="status-pill status-standby" id="dr-region-pill">Standby</span>
+            </div>
+
+            <div class="vm-card" id="card-vm-db-test">
+              <div>
+                <div class="vm-name">VM-DB-test (10.30.1.4)</div>
+                <div class="vm-sub">PostgreSQL • SUBNET-TEST</div>
+              </div>
+              <span class="status-pill status-standby" id="pill-vm-db-test">Replica</span>
+            </div>
+
+            <div class="vm-card" id="card-vm-app-test">
+              <div>
+                <div class="vm-name">VM-APP-test (10.30.1.5)</div>
+                <div class="vm-sub">Flask App • SUBNET-TEST</div>
+              </div>
+              <span class="status-pill status-standby" id="pill-vm-app-test">Replica</span>
+            </div>
+
+            <div class="vm-card" id="card-vm-web-test">
+              <div>
+                <div class="vm-name">VM-WEB-test (10.30.1.6)</div>
+                <div class="vm-sub">Health Check • SUBNET-TEST</div>
+              </div>
+              <span class="status-pill status-standby" id="pill-vm-web-test">Replica</span>
+            </div>
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- TAB 5: CODE FILES -->
-      <div id="code" class="tab-content">
-        <div class="card" style="margin-bottom: 24px;">
-          <h2>💻 Required Project Files & CLI Scripts</h2>
+    <!-- TAB 2: SIMULATOR -->
+    <div id="simulator" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">⚡ Live Failover Simulator & Execution Log</span>
+          <span class="status-pill status-failover">ARM REST API</span>
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px;">
+          Simulate the execution of Recovery Plan <code>RP-3TIER-APP</code> test failover from Central India to India South Central, including Boot Groups 1, 2, 3 and post-failover remediation.
+        </p>
+
+        <div class="sim-controls">
+          <button class="btn btn-danger" onclick="runSimulatedFailover()">🚨 Trigger Test Failover</button>
+          <button class="btn btn-secondary" onclick="resetSimulator()">🔄 Reset Environment</button>
         </div>
 
-        <h3 style="margin-bottom: 12px;">1. `01-deploy-primary-infra.azcli` (Primary East US)</h3>
-        <pre><code>az group create --name Contoso-App-Prod-RG --location eastus
-az network vnet create --resource-group Contoso-App-Prod-RG --name VNet-Prod --address-prefix 10.0.0.0/16 --subnet-name Subnet-Web --subnet-prefix 10.0.1.0/24
-az vm create --resource-group Contoso-App-Prod-RG --name Web-VM --image Ubuntu2204 --vnet-name VNet-Prod --subnet Subnet-Web --admin-username azureuser --generate-ssh-keys --custom-data cloud-init-primary.txt</code></pre>
-
-        <h3 style="margin-top: 24px; margin-bottom: 12px;">2. `Attach-DR-PublicIP.ps1` (Automation Runbook)</h3>
-        <pre><code>Param([object]$RecoveryPlanContext)
-$ErrorActionPreference = "Stop"
-Connect-AzAccount -Identity
-$TargetResourceGroup = "Contoso-App-DR-RG"
-$TargetVmName = "Web-VM"
-$DrPublicIpName = "Web-VM-DR-PIP"
-$VM = Get-AzVM -ResourceGroupName $TargetResourceGroup -Name $TargetVmName
-$NicId = $VM.NetworkProfile.NetworkInterfaces[0].Id
-$NicName = ($NicId -split '/')[-1]
-$NIC = Get-AzNetworkInterface -ResourceGroupName $TargetResourceGroup -Name $NicName
-$PublicIP = Get-AzPublicIpAddress -ResourceGroupName $TargetResourceGroup -Name $DrPublicIpName
-$NIC.IpConfigurations[0].PublicIpAddress = $PublicIP
-Set-AzNetworkInterface -NetworkInterface $NIC</code></pre>
+        <div class="console-log" id="console-output">
+          [System Ready] Click 'Trigger Test Failover' to simulate ARM REST API testFailover execution...
+        </div>
       </div>
+    </div>
+
+    <!-- TAB 3: TEAM -->
+    <div id="team" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">👥 Project Team Roster</span>
+          <span class="status-pill status-healthy">AZ-104 Team</span>
+        </div>
+        <table class="team-table">
+          <thead>
+            <tr>
+              <th>Student ID</th>
+              <th>Full Name</th>
+              <th>Role</th>
+              <th>Project Component Focus</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>2400030408</strong></td>
+              <td><strong>G Vishnu</strong></td>
+              <td><span class="status-pill status-healthy">Team Lead</span></td>
+              <td>Overall Architecture, ASR Vault Orchestration & REST API Execution</td>
+            </tr>
+            <tr>
+              <td><strong>2400030412</strong></td>
+              <td>G Praneeth</td>
+              <td>Team Member</td>
+              <td>3-Tier Compute Infrastructure & Guest Linux Kernel Verification</td>
+            </tr>
+            <tr>
+              <td><strong>2400030233</strong></td>
+              <td>Ch Mohan Krishna</td>
+              <td>Team Member</td>
+              <td>PostgreSQL Access Control & Database Remediation (pg_hba.conf)</td>
+            </tr>
+            <tr>
+              <td><strong>2400030418</strong></td>
+              <td>K Yeswanth</td>
+              <td>Team Member</td>
+              <td>SpendWise Flask Application Remediation & Health Endpoint Validation</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB 4: CHEAT SHEET -->
+    <div id="cheatsheet" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">📋 Review-Day Command Execution Cheat Sheet</span>
+          <span class="status-pill status-failover">Execution Sequence</span>
+        </div>
+        <div style="font-family: var(--font-mono); font-size: 0.85rem; line-height: 1.8; color: var(--text-main);">
+          <div style="margin-bottom: 16px;">
+            <strong style="color: var(--accent-cyan);">1. Protected Items Verification:</strong><br>
+            <code style="color: #7ee787;">az site-recovery protected-item list -g RG-ASR-24CC3046 --vault-name RSV-ASR-24CC3046 --fabric-name FABRIC-CENTRALINDIA --protection-container PC-SOURCE-CENTRALINDIA -o table</code>
+          </div>
+          <div style="margin-bottom: 16px;">
+            <strong style="color: var(--accent-cyan);">2. Recovery Plan Boot Groups:</strong><br>
+            <code style="color: #7ee787;">az site-recovery recovery-plan show -g RG-ASR-24CC3046 --vault-name RSV-ASR-24CC3046 --name RP-3TIER-APP -o json</code>
+          </div>
+          <div style="margin-bottom: 16px;">
+            <strong style="color: var(--accent-cyan);">3. Test Failover Job Status:</strong><br>
+            <code style="color: #7ee787;">az site-recovery job list -g RG-ASR-24CC3046 --vault-name RSV-ASR-24CC3046 --query "[?contains(properties.scenarioName, 'TestFailover')]" -o table</code>
+          </div>
+          <div style="margin-bottom: 16px;">
+            <strong style="color: var(--accent-cyan);">4. APP -> DB Connectivity Test (Port 5432):</strong><br>
+            <code style="color: #7ee787;">az vm run-command invoke -g RG-ASR-24CC3046-DR -n VM-APP-test --command-id RunShellScript --scripts "timeout 5 bash -c '</dev/tcp/10.30.1.4/5432' && echo DB_PORT_5432_OK"</code>
+          </div>
+          <div>
+            <strong style="color: var(--accent-cyan);">5. End-to-End Application Health Check:</strong><br>
+            <code style="color: #7ee787;">az vm run-command invoke -g RG-ASR-24CC3046-DR -n VM-WEB-test --command-id RunShellScript --scripts "curl -sS --max-time 10 -w '\nHTTP_STATUS=%{http_code}\n' http://10.30.1.5:5000/health"</code>
+          </div>
+        </div>
+      </div>
+    </div>
   </main>
+
+  <footer>
+    SpendWise 3-Tier Disaster Recovery Project • Central India to India South Central • Azure Site Recovery
+  </footer>
 
   <script>
     function switchTab(tabId) {
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-
+      
       event.target.classList.add('active');
       document.getElementById(tabId).classList.add('active');
     }
 
-    function runFailoverSimulation() {
-      const consoleLog = document.getElementById('console-log');
-      consoleLog.innerHTML = `[SIMULATION INITIATED] Triggering Test Failover for Recovery Plan: Contoso-App-Failover-Plan...<br>`;
+    function appendConsole(msg) {
+      const consoleEl = document.getElementById('console-output');
+      const time = new Date().toISOString().substring(11, 19);
+      consoleEl.innerHTML += `<br>[${time}] ${msg}`;
+      consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
+
+    function runSimulatedFailover() {
+      const consoleEl = document.getElementById('console-output');
+      consoleEl.innerHTML = "[22:04:19] 🚀 Initiating ARM REST API testFailover against RP-3TIER-APP...";
 
       setTimeout(() => {
-        consoleLog.innerHTML += `[00:15] [ASR] Stopping disk replication sync to Primary (East US)...<br>`;
-        document.getElementById('prod-status').innerText = 'FAILOVER';
-        document.getElementById('prod-status').style.color = '#f85149';
-      }, 1000);
+        appendConsole("--> Target Test VNet: VNET-ASR-TEST / SUBNET-TEST (10.30.1.0/24)");
+        appendConsole("--> Job ID 7df5bc18-4a2e-40ff-83da-1b21f16ea647 created in RSV-ASR-24CC3046");
+      }, 800);
 
       setTimeout(() => {
-        consoleLog.innerHTML += `[01:10] [GROUP 1] Provisioning Database VM target in West US (Subnet-DB-DR)...<br>`;
-        document.getElementById('dr-db-status').classList.remove('off');
-      }, 2500);
+        appendConsole("--> [Group 1] Instantiating VM-DB-test (10.30.1.4)...");
+        document.getElementById('pill-vm-db-test').className = "status-pill status-failover";
+        document.getElementById('pill-vm-db-test').textContent = "Running";
+      }, 2000);
 
       setTimeout(() => {
-        consoleLog.innerHTML += `[02:40] [GROUP 2] Provisioning Web VM target in West US (Subnet-Web-DR)...<br>`;
-        document.getElementById('dr-web-status').classList.remove('off');
-      }, 4000);
+        appendConsole("--> [Group 2] Instantiating VM-APP-test (10.30.1.5)...");
+        document.getElementById('pill-vm-app-test').className = "status-pill status-failover";
+        document.getElementById('pill-vm-app-test').textContent = "Running";
+      }, 3500);
 
       setTimeout(() => {
-        consoleLog.innerHTML += `[03:50] [RUNBOOK] Executing Post-Action Runbook: Attach-DR-PublicIP.ps1 via Managed Identity...<br>`;
-        consoleLog.innerHTML += `[04:15] [RUNBOOK] Attached Static Public IP (Web-VM-DR-PIP) to Web VM NIC.<br>`;
-      }, 5500);
+        appendConsole("--> [Group 3] Instantiating VM-WEB-test (10.30.1.6)...");
+        document.getElementById('pill-vm-web-test').className = "status-pill status-failover";
+        document.getElementById('pill-vm-web-test').textContent = "Running";
+        document.getElementById('dr-region-pill').className = "status-pill status-healthy";
+        document.getElementById('dr-region-pill').textContent = "Active DR";
+      }, 5000);
 
       setTimeout(() => {
-        consoleLog.innerHTML += `[04:30] ✅ SUCCESS! Test Failover Complete. RTO: 4m 30s. Web application live on DR IP.<br>`;
-        document.getElementById('dr-status').innerText = 'LIVE DR';
-        document.getElementById('dr-status').style.color = '#238636';
-      }, 7000);
+        appendConsole("--> [Remediation] Reconfiguring app.py DB_HOST = '10.30.1.4' & restarting spendwise.service...");
+        appendConsole("--> [Remediation] Updating pg_hba.conf with '10.30.1.0/24 scram-sha-256' & reloading postgresql...");
+      }, 6500);
+
+      setTimeout(() => {
+        appendConsole("✅ [Validation] Health Endpoint http://10.30.1.5:5000/health returned HTTP 200 OK!");
+        appendConsole("✅ Payload: {\"application\":\"SpendWise\",\"database\":\"connected\",\"status\":\"healthy\"}");
+        appendConsole("🎉 Test Failover Completed in 5 minutes 24 seconds!");
+      }, 8000);
+    }
+
+    function resetSimulator() {
+      document.getElementById('console-output').innerHTML = "[System Reset] Environment restored to initial standby state.";
+      
+      ['db', 'app', 'web'].forEach(tier => {
+        const pill = document.getElementById(`pill-vm-${tier}-test`);
+        pill.className = "status-pill status-standby";
+        pill.textContent = "Replica";
+      });
+
+      const drPill = document.getElementById('dr-region-pill');
+      drPill.className = "status-pill status-standby";
+      drPill.textContent = "Standby";
     }
   </script>
 </body>

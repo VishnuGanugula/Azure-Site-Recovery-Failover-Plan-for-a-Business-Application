@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta charset="UTF-8">
+<title>SpendWise 3-Tier ASR Failover Flowchart</title>
 <style id="lumi-runtime">
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,600;1,400&display=swap');
 
@@ -38,7 +40,7 @@ html, body {
 
 .widget-container {
   width: 100%;
-  max-width: 800px;
+  max-width: 840px;
   margin: 0 auto;
   box-sizing: border-box;
   display: flex;
@@ -72,7 +74,7 @@ html, body {
 
 .svg-viewport {
   width: 100%;
-  max-width: 600px;
+  max-width: 650px;
   height: auto;
   display: block;
   margin: 0 auto;
@@ -154,11 +156,11 @@ html, body {
   <div class="widget-container">
     <div class="diagram-card">
       <div class="diagram-header">
-        <h2>Azure Site Recovery Failover Lifecycle</h2>
-        <p>Interactive Disaster Recovery Orchestration Flowchart</p>
+        <h2>SpendWise 3-Tier ASR Failover Lifecycle</h2>
+        <p>Interactive 3-Tier Disaster Recovery Flowchart (Central India → India South Central)</p>
       </div>
 
-      <svg class="svg-viewport" viewBox="0 0 560 720" role="img" aria-label="Azure Site Recovery Failover Flowchart">
+      <svg class="svg-viewport" viewBox="0 0 560 720" role="img" aria-label="SpendWise 3-Tier ASR Failover Flowchart">
         <defs>
           <marker id="caret" viewBox="0 0 10 10" refX="7.5" refY="5" markerWidth="10" markerHeight="10" orient="auto">
             <path d="M 3 1.2 L 7.5 5 L 3 8.8" fill="none" stroke="var(--on-surface-variant)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -181,57 +183,57 @@ html, body {
 
         <!-- NODES -->
         <g id="node-A" class="node-group" data-id="A">
-          <ellipse class="node-shape" cx="280" cy="40" rx="110" ry="24" fill="var(--surface-bright)" stroke="var(--outline)" stroke-width="1.5"/>
-          <text x="280" y="38" text-anchor="middle" font-family="var(--ff-sans)" font-size="14" font-weight="600" fill="var(--on-surface)">Primary Region Active</text>
-          <text x="280" y="52" text-anchor="middle" font-family="var(--ff-mono)" font-size="11" fill="var(--on-surface-variant)">Source Production Environment</text>
+          <ellipse class="node-shape" cx="280" cy="40" rx="120" ry="24" fill="var(--surface-bright)" stroke="var(--outline)" stroke-width="1.5"/>
+          <text x="280" y="38" text-anchor="middle" font-family="var(--ff-sans)" font-size="14" font-weight="600" fill="var(--on-surface)">Central India Active</text>
+          <text x="280" y="52" text-anchor="middle" font-family="var(--ff-mono)" font-size="11" fill="var(--on-surface-variant)">3-Tier Production Workload</text>
         </g>
 
         <g id="node-B" class="node-group" data-id="B">
-          <rect class="node-shape" x="170" y="99" width="220" height="50" rx="12" fill="var(--surface-bright)" stroke="var(--outline)" stroke-width="1.5"/>
-          <text x="280" y="120" text-anchor="middle" font-family="var(--ff-sans)" font-size="14" font-weight="600" fill="var(--on-surface)">Continuous Replication</text>
-          <text x="280" y="136" text-anchor="middle" font-family="var(--ff-mono)" font-size="11" fill="var(--on-surface-variant)">Cache Storage & Delta Sync</text>
+          <rect class="node-shape" x="160" y="99" width="240" height="50" rx="12" fill="var(--surface-bright)" stroke="var(--outline)" stroke-width="1.5"/>
+          <text x="280" y="120" text-anchor="middle" font-family="var(--ff-sans)" font-size="14" font-weight="600" fill="var(--on-surface)">Continuous A2A Replication</text>
+          <text x="280" y="136" text-anchor="middle" font-family="var(--ff-mono)" font-size="11" fill="var(--on-surface-variant)">POLICY-A2A-SPENDWISE Delta Sync</text>
         </g>
 
         <g id="node-C" class="node-group" data-id="C">
           <path class="node-shape" d="M 267 178 Q 280 175 293 178 L 382 202 Q 395 210 382 218 L 293 242 Q 280 245 267 242 L 178 218 Q 165 210 178 202 Z" fill="var(--surface-bright)" stroke="var(--outline)" stroke-width="1.5"/>
-          <text x="280" y="205" text-anchor="middle" font-family="var(--ff-sans)" font-size="14" font-weight="600" fill="var(--on-surface)">Disaster / Drill Initiated</text>
-          <text x="280" y="221" text-anchor="middle" font-family="var(--ff-mono)" font-size="11" fill="var(--on-surface-variant)">Manual or Automated Trigger</text>
+          <text x="280" y="205" text-anchor="middle" font-family="var(--ff-sans)" font-size="14" font-weight="600" fill="var(--on-surface)">Test Failover Triggered</text>
+          <text x="280" y="221" text-anchor="middle" font-family="var(--ff-mono)" font-size="11" fill="var(--on-surface-variant)">ARM REST API testFailover</text>
         </g>
 
         <g id="node-D" class="node-group" data-id="D">
-          <rect class="node-shape" x="165" y="279" width="230" height="50" rx="12" fill="var(--accent-container)" stroke="var(--primary)" stroke-width="1.5"/>
-          <text x="280" y="300" text-anchor="middle" font-family="var(--ff-sans)" font-size="14" font-weight="600" fill="var(--on-surface)">Execute Recovery Plan</text>
-          <text x="280" y="316" text-anchor="middle" font-family="var(--ff-mono)" font-size="11" fill="var(--on-surface-variant)">ASR Orchestration Engine</text>
+          <rect class="node-shape" x="160" y="279" width="240" height="50" rx="12" fill="var(--accent-container)" stroke="var(--primary)" stroke-width="1.5"/>
+          <text x="280" y="300" text-anchor="middle" font-family="var(--ff-sans)" font-size="14" font-weight="600" fill="var(--on-surface)">Execute RP-3TIER-APP</text>
+          <text x="280" y="316" text-anchor="middle" font-family="var(--ff-mono)" font-size="11" fill="var(--on-surface-variant)">Sequenced Boot (DB → APP → WEB)</text>
         </g>
 
         <g id="node-E" class="node-group" data-id="E">
-          <rect class="node-shape" x="65" y="393" width="190" height="50" rx="12" fill="var(--surface-bright)" stroke="var(--outline)" stroke-width="1.5"/>
-          <text x="160" y="414" text-anchor="middle" font-family="var(--ff-sans)" font-size="14" font-weight="600" fill="var(--on-surface)">Shut Down Source VMs</text>
-          <text x="160" y="430" text-anchor="middle" font-family="var(--ff-mono)" font-size="11" fill="var(--on-surface-variant)">Flushes Pending Data</text>
+          <rect class="node-shape" x="60" y="393" width="200" height="50" rx="12" fill="var(--surface-bright)" stroke="var(--outline)" stroke-width="1.5"/>
+          <text x="160" y="414" text-anchor="middle" font-family="var(--ff-sans)" font-size="14" font-weight="600" fill="var(--on-surface)">Network Isolation</text>
+          <text x="160" y="430" text-anchor="middle" font-family="var(--ff-mono)" font-size="11" fill="var(--on-surface-variant)">VNET-ASR-TEST / SUBNET-TEST</text>
         </g>
 
         <g id="node-F" class="node-group" data-id="F">
-          <rect class="node-shape" x="305" y="393" width="190" height="50" rx="12" fill="var(--surface-bright)" stroke="var(--outline)" stroke-width="1.5"/>
-          <text x="400" y="414" text-anchor="middle" font-family="var(--ff-sans)" font-size="14" font-weight="600" fill="var(--on-surface)">Provision Target VMs</text>
-          <text x="400" y="430" text-anchor="middle" font-family="var(--ff-mono)" font-size="11" fill="var(--on-surface-variant)">From Replicated Disks</text>
+          <rect class="node-shape" x="300" y="393" width="200" height="50" rx="12" fill="var(--surface-bright)" stroke="var(--outline)" stroke-width="1.5"/>
+          <text x="400" y="414" text-anchor="middle" font-family="var(--ff-sans)" font-size="14" font-weight="600" fill="var(--on-surface)">Instantiate Test VMs</text>
+          <text x="400" y="430" text-anchor="middle" font-family="var(--ff-mono)" font-size="11" fill="var(--on-surface-variant)">VM-DB-test, VM-APP-test, VM-WEB-test</text>
         </g>
 
         <g id="node-G" class="node-group" data-id="G">
-          <rect class="node-shape" x="160" y="503" width="240" height="50" rx="12" fill="var(--surface-bright)" stroke="var(--outline)" stroke-width="1.5"/>
-          <text x="280" y="524" text-anchor="middle" font-family="var(--ff-sans)" font-size="14" font-weight="600" fill="var(--on-surface)">Post-Failover Automation</text>
-          <text x="280" y="540" text-anchor="middle" font-family="var(--ff-mono)" font-size="11" fill="var(--on-surface-variant)">Managed Identity Runbook</text>
+          <rect class="node-shape" x="150" y="503" width="260" height="50" rx="12" fill="var(--surface-bright)" stroke="var(--outline)" stroke-width="1.5"/>
+          <text x="280" y="524" text-anchor="middle" font-family="var(--ff-sans)" font-size="14" font-weight="600" fill="var(--on-surface)">App & DB Remediation</text>
+          <text x="280" y="540" text-anchor="middle" font-family="var(--ff-mono)" font-size="11" fill="var(--on-surface-variant)">Fix app.py DB_HOST & pg_hba.conf</text>
         </g>
 
         <g id="node-H" class="node-group" data-id="H">
-          <rect class="node-shape" x="170" y="587" width="220" height="46" rx="23" fill="var(--positive-container)" stroke="var(--positive)" stroke-width="1.5"/>
-          <text x="280" y="606" text-anchor="middle" font-family="var(--ff-sans)" font-size="14" font-weight="600" fill="var(--on-surface)">Secondary Region Active</text>
-          <text x="280" y="622" text-anchor="middle" font-family="var(--ff-mono)" font-size="11" fill="var(--on-surface-variant)">Target Workloads Live</text>
+          <rect class="node-shape" x="160" y="587" width="240" height="46" rx="23" fill="var(--positive-container)" stroke="var(--positive)" stroke-width="1.5"/>
+          <text x="280" y="606" text-anchor="middle" font-family="var(--ff-sans)" font-size="14" font-weight="600" fill="var(--on-surface)">India South Central Validated</text>
+          <text x="280" y="622" text-anchor="middle" font-family="var(--ff-mono)" font-size="11" fill="var(--on-surface-variant)">HTTP 200 OK | Health Healthy</text>
         </g>
 
         <g id="node-I" class="node-group" data-id="I">
-          <rect class="node-shape" x="175" y="667" width="210" height="46" rx="12" fill="var(--surface-bright)" stroke="var(--outline)" stroke-width="1.5"/>
-          <text x="280" y="686" text-anchor="middle" font-family="var(--ff-sans)" font-size="14" font-weight="600" fill="var(--on-surface)">Reprotect & Failback</text>
-          <text x="280" y="702" text-anchor="middle" font-family="var(--ff-mono)" font-size="11" fill="var(--on-surface-variant)">Reverse Replication Setup</text>
+          <rect class="node-shape" x="170" y="667" width="220" height="46" rx="12" fill="var(--surface-bright)" stroke="var(--outline)" stroke-width="1.5"/>
+          <text x="280" y="686" text-anchor="middle" font-family="var(--ff-sans)" font-size="14" font-weight="600" fill="var(--on-surface)">Review Evidence Summary</text>
+          <text x="280" y="702" text-anchor="middle" font-family="var(--ff-mono)" font-size="11" fill="var(--on-surface-variant)">RTO: 5m 24s | RPO: &lt; 30s</text>
         </g>
       </svg>
 
@@ -241,22 +243,22 @@ html, body {
           <span id="inspector-title" class="inspector-title">Hover or tap a step</span>
           <span id="inspector-badge" class="inspector-badge">Phase Detail</span>
         </div>
-        <p id="inspector-desc" class="inspector-desc">Explore the Azure Site Recovery lifecycle by hovering over any node in the orchestration flowchart above.</p>
+        <p id="inspector-desc" class="inspector-desc">Explore the SpendWise 3-Tier Azure Site Recovery lifecycle by hovering over any node in the orchestration flowchart above.</p>
       </div>
     </div>
   </div>
 
   <script>
     const NODE_DETAILS = {
-      A: { title: "Primary Region Active", badge: "Normal State", desc: "Source VMs operate normally in East US. The Mobility Service extension captures write I/O operations continuously." },
-      B: { title: "Continuous Replication", badge: "Replication Phase", desc: "Data changes are transmitted to a Cache Storage Account in East US, then securely pushed to managed target disks in West US." },
-      C: { title: "Disaster / Drill Initiated", badge: "Trigger Event", desc: "An unplanned outage or planned DR drill triggers failover execution manually via Azure Portal / CLI or automatically via alerts." },
-      D: { title: "Execute Recovery Plan", badge: "ASR Engine", desc: "Azure Site Recovery processes the recovery plan, evaluating startup groups, ordering dependencies, and calling automation runbooks." },
-      E: { title: "Shut Down Source VMs", badge: "Data Integrity", desc: "ASR attempts a clean shutdown of primary VMs to flush remaining data and ensure crash-consistent recovery snapshot integrity." },
-      F: { title: "Provision Target VMs", badge: "Compute Spin-Up", desc: "Target Azure VMs are instantiated using replicated managed disks, assigning designated VNet subnets and VM sizes." },
-      G: { title: "Post-Failover Automation", badge: "Networking & Scripts", desc: "Azure Automation runbooks execute to reattach static Public IPs, update DNS records, and register IP changes." },
-      H: { title: "Secondary Region Active", badge: "Failover Complete", desc: "Workloads are fully operational in West US. User traffic is routed to the new target endpoints." },
-      I: { title: "Reprotect & Failback", badge: "Recovery Phase", desc: "Once the primary region recovers, reprotection synchronizes changes back to East US to enable seamless failback." }
+      A: { title: "Central India Production", badge: "Primary State", desc: "Production 3-tier workload (VM-DB, VM-APP, VM-WEB) operates in Central India (RG-ASR-24CC3046)." },
+      B: { title: "Continuous A2A Replication", badge: "Replication Policy", desc: "POLICY-A2A-SPENDWISE continuously syncs disk writes to a staging cache storage account, transferring deltas to India South Central." },
+      C: { title: "Test Failover Triggered", badge: "ARM REST API", desc: "Direct HTTP POST to ARM REST API /replicationRecoveryPlans/RP-3TIER-APP/testFailover triggers zero-impact DR test." },
+      D: { title: "Execute RP-3TIER-APP", badge: "Sequenced Recovery", desc: "Recovery plan enforces 3 Boot Groups: Group 1 (VM-DB), Group 2 (VM-APP), and Group 3 (VM-WEB)." },
+      E: { title: "Network Isolation", badge: "VNET-ASR-TEST", desc: "Test VMs are placed inside VNET-ASR-TEST / SUBNET-TEST (10.30.1.0/24), completely isolated from production network paths." },
+      F: { title: "Instantiate Test VMs", badge: "DR Instances", desc: "Instantiates VM-DB-test (10.30.1.4), VM-APP-test (10.30.1.5), and VM-WEB-test (10.30.1.6)." },
+      G: { title: "App & DB Remediation", badge: "In-Guest Fixes", desc: "Reconfigures app.py DB_HOST to 10.30.1.4 on VM-APP-test and adds 10.30.1.0/24 scram-sha-256 to pg_hba.conf on VM-DB-test." },
+      H: { title: "India South Central Validated", badge: "HTTP 200 OK", desc: "Health endpoint http://10.30.1.5:5000/health returns HTTP 200 with database status connected." },
+      I: { title: "Review Evidence Summary", badge: "5m 24s RTO", desc: "Measured job execution duration of 5 minutes 24 seconds from 22:04:19 to 22:09:43 UTC." }
     };
 
     const NODE_EDGES = {
@@ -283,7 +285,7 @@ html, body {
       if (!id || !NODE_DETAILS[id]) {
         document.getElementById('inspector-title').textContent = 'Hover or tap a step';
         document.getElementById('inspector-badge').textContent = 'Phase Detail';
-        document.getElementById('inspector-desc').textContent = 'Explore the Azure Site Recovery lifecycle by hovering over any node in the orchestration flowchart above.';
+        document.getElementById('inspector-desc').textContent = 'Explore the SpendWise 3-Tier Azure Site Recovery lifecycle by hovering over any node in the orchestration flowchart above.';
         return;
       }
 
